@@ -1,0 +1,12 @@
+tree-sitter>=0.22
+tree-sitter-python
+tree-sitter-javascript
+tree-sitter-ruby
+tree-sitter-go
+tree-sitter-java
+tree-sitter-rust
+tree-sitter-kotlin
+tree-sitter-swift
+gitpython
+rich
+click
