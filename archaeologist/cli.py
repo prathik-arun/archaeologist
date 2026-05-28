@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import json
-import sys
+"""deadcode — scan command."""
 import os
-from pathlib import Path
+import sys
+import json
 
 import click
 from rich.console import Console
@@ -11,10 +11,9 @@ from rich.text import Text
 from rich.panel import Panel
 from rich import box
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from src.scanner import scan_directory
-from src.git_analyzer import analyze_git_history
-from src.scorer import analyze
+from archaeologist.scanner import scan_directory
+from archaeologist.git_analyzer import analyze_git_history
+from archaeologist.scorer import analyze
 
 console = Console()
 
@@ -22,43 +21,38 @@ console = Console()
 def confidence_bar(score: int, width: int = 12) -> Text:
     filled = int((score / 100) * width)
     bar = "█" * filled + "░" * (width - filled)
-    if score >= 80:
-        color = "red"
-    elif score >= 50:
-        color = "yellow"
-    else:
-        color = "blue"
+    if score >= 80: color = "red"
+    elif score >= 50: color = "yellow"
+    else: color = "blue"
     return Text(bar, style=color)
 
 
 def label_style(label: str) -> str:
-    if label == "Safe to delete":
-        return "green"
-    elif label == "Review first":
-        return "yellow"
+    if label == "Safe to delete": return "green"
+    elif label == "Review first": return "yellow"
     return "blue"
 
 
 @click.command()
 @click.argument("path", default=".", type=click.Path(exists=True))
-@click.option("--min-confidence", default=40, help="Minimum confidence score to show (0-100)")
+@click.option("--min-confidence", default=40, help="Minimum confidence score (0-100)")
 @click.option("--limit", default=50, help="Max results to show")
 @click.option("--json-output", is_flag=True, help="Output as JSON")
-@click.option("--explain", is_flag=True, help="Show detailed reasons for each result")
+@click.option("--explain", is_flag=True, help="Show detailed reasons")
 @click.option("--no-git", is_flag=True, help="Skip git history analysis")
 def cli(path, min_confidence, limit, json_output, explain, no_git):
     """
-    Dead Code Archaeologist — find unused functions in your codebase.
+    Scan a project for dead code and print a ranked table.
 
     Examples:
 
-      deadcode .                     scan current directory
+      deadcode .                          scan current directory
 
-      deadcode ./src --explain       show why each function is flagged
+      deadcode ./src --explain            show why each function was flagged
 
-      deadcode . --min-confidence 70  only show high-confidence dead code
+      deadcode . --min-confidence 75      only show higher confidence results
 
-      deadcode . --json-output > report.json
+      deadcode . --json-output            output as JSON
     """
     abs_path = os.path.abspath(path)
 
@@ -69,7 +63,6 @@ def cli(path, min_confidence, limit, json_output, explain, no_git):
             border_style="dim"
         ))
 
-    # Step 1: scan files
     with console.status("[dim]Parsing files...[/dim]", spinner="dots") if not json_output else _nullctx():
         scan_result = scan_directory(abs_path)
 
@@ -79,14 +72,11 @@ def cli(path, min_confidence, limit, json_output, explain, no_git):
     if not json_output:
         console.print(f"[dim]  Found {total_funcs} functions across {total_files} files[/dim]")
 
-    # Step 2: git history
     git_info_map = {}
     if not no_git:
         with console.status("[dim]Analyzing git history...[/dim]", spinner="dots") if not json_output else _nullctx():
-            all_files = list(scan_result.calls.keys())
-            git_info_map = analyze_git_history(abs_path, all_files)
+            git_info_map = analyze_git_history(abs_path, list(scan_result.calls.keys()))
 
-    # Step 3: score
     candidates = analyze(scan_result, git_info_map, min_confidence=min_confidence)
     shown = candidates[:limit]
 
@@ -94,13 +84,9 @@ def cli(path, min_confidence, limit, json_output, explain, no_git):
         output = []
         for c in shown:
             output.append({
-                "name": c.name,
-                "file": c.file,
-                "line": c.line,
-                "language": c.language,
-                "confidence": c.confidence,
-                "label": c.label,
-                "reasons": c.reasons,
+                "name": c.name, "file": c.file, "line": c.line,
+                "language": c.language, "confidence": c.confidence,
+                "label": c.label, "reasons": c.reasons,
                 "callers_found": c.callers_found,
                 "days_since_touched": c.days_since_touched,
                 "author_count": c.author_count,
@@ -112,7 +98,6 @@ def cli(path, min_confidence, limit, json_output, explain, no_git):
         console.print("\n[green]No dead code found above the confidence threshold.[/green]")
         return
 
-    # Summary stats
     safe = sum(1 for c in candidates if c.label == "Safe to delete")
     review = sum(1 for c in candidates if c.label == "Review first")
     runtime = sum(1 for c in candidates if c.label == "Needs runtime data")
@@ -121,13 +106,8 @@ def cli(path, min_confidence, limit, json_output, explain, no_git):
                   f"[yellow]{review}[/yellow] review first  "
                   f"[blue]{runtime}[/blue] needs runtime data\n")
 
-    table = Table(
-        box=box.SIMPLE,
-        show_header=True,
-        header_style="dim",
-        show_edge=False,
-        pad_edge=False,
-    )
+    table = Table(box=box.SIMPLE, show_header=True, header_style="dim",
+                  show_edge=False, pad_edge=False)
     table.add_column("Confidence", width=14)
     table.add_column("Function", style="cyan", no_wrap=True, max_width=30)
     table.add_column("File", style="dim", no_wrap=True, max_width=40)
@@ -139,16 +119,9 @@ def cli(path, min_confidence, limit, json_output, explain, no_git):
         rel_file = os.path.relpath(c.file, abs_path)
         file_with_line = f"{rel_file}:{c.line}"
         verdict = Text(c.label, style=label_style(c.label))
-
-        row = [
-            confidence_bar(c.confidence),
-            c.name,
-            file_with_line,
-            verdict,
-        ]
+        row = [confidence_bar(c.confidence), c.name, file_with_line, verdict]
         if explain:
             row.append(Text(" · ".join(c.reasons), style="dim"))
-
         table.add_row(*row)
 
     console.print(table)
@@ -157,7 +130,7 @@ def cli(path, min_confidence, limit, json_output, explain, no_git):
         console.print(f"[dim]  ... and {len(candidates) - limit} more. Use --limit to see more.[/dim]")
 
     console.print(f"\n[dim]  Tip: run with --explain to see why each function was flagged[/dim]")
-    console.print(f"[dim]  Tip: run with --json-output to pipe results into a dashboard[/dim]\n")
+    console.print(f"[dim]  Tip: run with --json-output > report.json to export[/dim]\n")
 
 
 class _nullctx:

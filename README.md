@@ -1,72 +1,125 @@
-# ☠ Dead Code Archaeologist
+# ☠ Archaeologist
 
-> Find unused functions. Delete them safely. Open a PR. All in one command.
-
-Dead Code Archaeologist scans your codebase for dead functions using a multi-signal confidence engine — combining static call graph analysis with git history — then automatically deletes them on an isolated branch, runs your test suite, and opens a GitHub PR.
-
-## Install
+**Codebase intelligence toolkit.** Five tools to understand, clean, and improve your codebase — all from one install.
 
 ```bash
-pip install deadcode-archaeologist
+pip3 install archaeologist
 ```
 
-## Quick start
+---
+
+## Five Tools
+
+### ☠ Unused Code Finder
+Find functions nobody calls. Combines static analysis with git history into a confidence score. Auto-deletes on an isolated branch, runs your tests, and opens a GitHub PR.
 
 ```bash
-# Scan and see what's dead (no changes)
 deadcode ./my-project --explain
-
-# Generate a full interactive HTML report
-deadcode-report ./my-project
-
-# Preview what would be deleted (safe — no changes)
-deadcode-clean ./my-project --dry-run
-
-# Full auto-clean: delete → test → branch → PR
+deadcode-report ./my-project --output report.html
+deadcode-clean ./my-project --dry-run --min-confidence 85
 deadcode-clean ./my-project --min-confidence 85
 ```
 
-## How it works
+### ⬡ Codebase Graph
+Interactive browser-based map of your architecture. Files grouped by folder, colored by health. See which files are clean, which have dead code, and which are completely unused.
 
-1. **AST scan** — tree-sitter parses every function definition and call across all supported languages
-2. **Git analysis** — last commit date, author count, and commit frequency per file
-3. **Confidence scoring** — 5 signals combine into a 0–100 score
-4. **Surgical deletion** — functions removed by precise byte ranges, no broken syntax
-5. **Tests run** — your test suite runs automatically before anything is committed
-6. **PR opened** — a GitHub PR with full per-function documentation
+```bash
+archaeologist-graph ./my-project
+archaeologist-graph ./my-project --output graph.html
+```
 
-## Supported languages
+### ◎ Change Impact Analyzer
+Before changing any file, see what could break — every caller, every importer, test coverage, and a 0–100 blast radius score.
 
-Python, Dart/Flutter, JavaScript, TypeScript, Go, Java, Rust, Kotlin, Ruby, Swift
+```bash
+archaeologist-impact ./my-project user_service.dart
+archaeologist-impact ./my-project user_service.dart --html
+```
 
-## Commands
+### ◈ Complexity Scorer
+Scores every function on cyclomatic complexity — decision branches, nesting depth, and length. Ranks worst-first so you know what to refactor.
 
-| Command | What it does |
-|---------|-------------|
-| `deadcode ./src --explain` | Scan and print ranked table |
-| `deadcode ./src --json-output` | Output results as JSON |
-| `deadcode-report ./src` | Generate HTML dashboard |
-| `deadcode-clean ./src --dry-run` | Preview deletions, no changes |
-| `deadcode-clean ./src --min-confidence 85` | Full auto-clean + PR |
-| `deadcode-clean ./src --no-pr` | Clean without opening PR |
-| `deadcode-clean ./src --lang dart` | Only clean Dart files |
+```bash
+archaeologist-complexity ./my-project
+archaeologist-complexity ./my-project --html --min-score 15
+```
 
-## Confidence score
+### ⧉ Duplicate Detector
+Finds copy-paste code and near-identical functions. Detects same names in different files, exact body copies, and high-similarity implementations.
 
-| Signal | Points |
-|--------|--------|
-| Zero callers in codebase | +45 |
-| Git age (2+ years untouched) | +20 |
-| Single author ever | +15 |
-| Callers are themselves dead | +10 |
-| Very few commits (≤2) | +10 |
+```bash
+archaeologist-dupes ./my-project
+archaeologist-dupes ./my-project --html
+```
 
-## Verdicts
+---
 
-- **Safe to delete** (80–100) — multiple signals agree, auto-deleted by `deadcode-clean`
-- **Review first** (50–79) — likely dead, verify manually before deleting
-- **Needs runtime data** (40–49) — may be called dynamically, add coverage tracing first
+## Languages
+
+**Production tested:** Python, Dart/Flutter, JavaScript, TypeScript
+
+**Beta (may have false positives):** Go, Java, Kotlin, Ruby, Rust, Swift
+
+---
+
+## How the Unused Code Finder Works
+
+1. **Parse** — Tree-sitter builds an AST for every file, extracting all function definitions and calls
+2. **Git analysis** — Last commit date, author count, and commit frequency per file
+3. **Score** — Five signals combine into a 0–100 confidence score
+4. **Delete** — Functions removed by precise AST byte ranges — no broken syntax
+5. **Test** — Your test suite runs automatically. If tests fail, everything rolls back
+6. **PR** — A GitHub PR opens with full documentation of every change
+
+### Confidence Score Signals
+
+| Signal | Points | How it works |
+|--------|--------|-------------|
+| Call graph | 45 | Zero callers = full 45pts |
+| Git age | 20 | 2+ years untouched = 20pts |
+| Author count | 15 | Single author = 15pts |
+| Recursive dead | 10 | All callers are also dead = 10pts |
+| Commit count | 10 | Only 1–2 commits ever = 10pts |
+
+### Verdicts
+
+- **80–100: Safe to remove** — Multiple signals agree. Auto-clean targets these by default.
+- **50–79: Review first** — Likely unused. Verify manually before removing.
+- **40–49: Needs runtime data** — Static analysis uncertain. May be called via reflection.
+
+---
+
+## Git Flow (Auto-clean)
+
+Your main branch is never touched. Everything happens on an isolated branch:
+
+1. New branch created — e.g. `cleanup-2026-05-28`
+2. Functions removed surgically by AST byte ranges
+3. Your test suite runs automatically
+4. If tests pass — branch committed
+5. GitHub PR opened with full documentation
+6. If tests fail — branch deleted, nothing changes
+
+To review and merge:
+```bash
+git checkout cleanup-2026-05-28
+git diff main cleanup-2026-05-28
+git checkout main && git merge cleanup-2026-05-28
+```
+
+To roll back:
+```bash
+git branch -D cleanup-2026-05-28
+```
+
+---
+
+## Requirements
+
+- Python 3.11+
+- Git (for git history analysis)
+- GitHub token (optional, for auto-PR feature)
 
 ## License
 
-MIT
+MIT — free to use, modify, and distribute.

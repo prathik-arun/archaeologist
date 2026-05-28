@@ -66,6 +66,17 @@ def score_candidate(
     if func.file in all_dead_files and call_count > 0:
         score += 10
 
+    # Penalty: private methods (starting with _ in Dart/Python) are often
+    # called within the same file via callbacks — reduce confidence
+    if func.name.startswith("_") and func.language in ("dart", "python"):
+        score = max(0, score - 20)
+
+    # Penalty: if function name contains common active-code patterns
+    active_patterns = ("error", "exception", "callback", "listener", "handler",
+                       "observer", "delegate", "route", "navigate", "screen")
+    if any(p in func.name.lower() for p in active_patterns):
+        score = max(0, score - 10)
+
     return min(score, 100)
 
 
@@ -142,10 +153,35 @@ def analyze(
     call_counts: dict[str, int] = {}
     for calling_file, called_names in scan_result.calls.items():
         for name in called_names:
+            # Skip qualified markers - these are tracking metadata not real calls
+            if name.startswith("__qualified__"):
+                continue
             # skip if this is the same file that defines the function
             if calling_file in defined_in.get(name, set()):
                 continue
             call_counts[name] = call_counts.get(name, 0) + 1
+
+    # Now apply qualification penalty: if a name only appears as X.name
+    # (property/enum access) across all files, reduce its call count
+    # because those aren't function calls to the function we defined
+    for func_name in list(call_counts.keys()):
+        qualified_key = f"__qualified__{func_name}"
+        # Count how many files have ONLY qualified usage vs standalone usage
+        standalone_count = 0
+        qualified_only_count = 0
+        for calling_file, called_names in scan_result.calls.items():
+            if calling_file in defined_in.get(func_name, set()):
+                continue
+            has_standalone = func_name in called_names
+            has_qualified = qualified_key in called_names
+            if has_standalone:
+                standalone_count += 1
+            elif has_qualified:
+                qualified_only_count += 1
+        # If all usages are qualified (X.name pattern), they're likely
+        # enum values or properties, not function calls
+        if standalone_count == 0 and qualified_only_count > 0:
+            call_counts[func_name] = 0
 
     # Files where every function in the file is uncalled — used for recursive dead scoring
     dead_files: set[str] = set()

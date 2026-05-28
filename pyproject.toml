@@ -1,22 +1,21 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "deadcode-archaeologist"
-version = "0.1.0"
+name = "archaeologist"
+version = "0.7.7"
 description = "Find and auto-delete dead code across 9 languages — with git intelligence and auto PR"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
 authors = [{ name = "Prathik", email = "prathik@example.com" }]
-keywords = ["dead-code", "static-analysis", "linter", "refactoring", "cleanup"]
+keywords = ["dead-code", "static-analysis", "linter", "refactoring", "cleanup", "flutter", "dart"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Quality Assurance",
-    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
     "tree-sitter>=0.22",
@@ -34,11 +33,18 @@ dependencies = [
 ]
 
 [project.scripts]
-deadcode = "deadcode_archaeologist.main:cli"
-deadcode-clean = "deadcode_archaeologist.clean:cli"
-deadcode-report = "deadcode_archaeologist.report:generate_report"
+deadcode = "archaeologist.cli:cli"
+deadcode-clean = "archaeologist.clean_cli:cli"
+deadcode-report = "archaeologist.report_cli:cli"
+archaeologist-graph = "archaeologist.graph_cli:cli"
+archaeologist-impact = "archaeologist.impact_cli:cli"
+archaeologist-complexity = "archaeologist.complexity_cli:cli"
+archaeologist-dupes = "archaeologist.dupes_cli:cli"
 
 [project.urls]
-Homepage = "https://github.com/YOUR_USERNAME/deadcode-archaeologist"
-Repository = "https://github.com/YOUR_USERNAME/deadcode-archaeologist"
-Issues = "https://github.com/YOUR_USERNAME/deadcode-archaeologist/issues"
+Homepage = "https://github.com/prathik-arun/deadcode-archaeologist"
+Repository = "https://github.com/prathik-arun/deadcode-archaeologist"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["archaeologist*"]

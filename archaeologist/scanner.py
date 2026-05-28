@@ -84,10 +84,24 @@ FALSE_POSITIVE_NAMES = {
     "applicationWillResignActive", "applicationDidResignActive",
     "applicationDidHide", "applicationWillUnhide",
     "windowWillClose", "windowDidBecomeKey", "windowDidResignKey",
+    "application", "applicationShouldHandleReopen",
+    "applicationDockMenu", "applicationShouldOpenUntitledFile",
+    "applicationOpenUntitledFile", "applicationShouldTerminateAfterLastWindowClosed",
+    # iOS callbacks
+    "applicationDidEnterBackground", "applicationWillEnterForeground",
+    "applicationDidReceiveMemoryWarning", "applicationWillTerminate",
+    "application:didFinishLaunchingWithOptions",
+    # Handle* patterns in Swift/ObjC are usually delegate methods
+    "handleNewRxPage", "handle_new_rx_page",
     # LLDB / debug helpers
     "__lldb_init_module", "__lldb_typesummary_impl",
     # Rust
     "new", "fmt", "from", "into", "default",
+    # Serialization (all languages)
+    "toJson", "fromJson", "toMap", "fromMap", "toObject", "fromObject",
+    "serialize", "deserialize", "encode", "decode", "copyWith",
+    "toString", "toList", "fromList", "toDict", "from_dict",
+    "to_dict", "to_json", "from_json", "marshal", "unmarshal",
 }
 
 FALSE_POSITIVE_DECORATORS = {
@@ -532,8 +546,11 @@ _DART_FUNC_RE = re.compile(
     r'\s*(?:\{|=>)',
 )
 
-# Match only lowercase function calls — excludes constructors (UpperCase)
-_DART_CALL_RE = re.compile(r'\b([a-z_][a-zA-Z0-9_]*)\s*\(')
+# Match function calls — two patterns:
+# 1. Namespaced calls: SomeClass.method( -> store as "SomeClass.method"
+# 2. Standalone calls: method( -> store as "method"
+_DART_CALL_RE = re.compile(r'([A-Za-z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s*\(')
+_DART_STANDALONE_CALL_RE = re.compile(r'(?<![.\w])([a-z_][a-zA-Z0-9_]*)\s*\(')
 
 _DART_SKIP_KEYWORDS = {
     "if", "for", "while", "switch", "return", "assert", "await",
@@ -542,10 +559,24 @@ _DART_SKIP_KEYWORDS = {
 }
 
 DART_ENTRY_POINTS = FALSE_POSITIVE_NAMES | {
+    # Serialization — called indirectly by JSON libraries
+    "toJson", "fromJson", "toMap", "fromMap", "toObject",
+    "fromObject", "serialize", "deserialize", "encode", "decode",
+    "copyWith", "props", "toList", "fromList",
+    # Build methods
     "build", "createState", "initState", "dispose",
     "didChangeDependencies", "didUpdateWidget", "deactivate",
     "debugFillProperties", "noSuchMethod", "toString",
     "main", "setUp", "tearDown",
+    # Flutter dialog/navigation functions
+    "showDialog", "showModalBottomSheet", "showBottomSheet",
+    "showMenu", "showSearch", "showDatePicker", "showTimePicker",
+    "showCupertinoDialog", "showCupertinoModalPopup",
+    "showAboutDialog", "showLicensePage",
+    # Flutter routing
+    "generateRoute", "onGenerateRoute", "onUnknownRoute",
+    # Common state management
+    "emit", "add", "close",
 }
 
 
@@ -553,6 +584,8 @@ def scan_dart_file(filepath: str):
     source_text = Path(filepath).read_text(encoding="utf-8", errors="replace")
     is_test = _is_test_file(filepath)
     defs, calls = [], set()
+    
+
 
     for m in _DART_FUNC_RE.finditer(source_text):
         name = m.group(1)
@@ -561,7 +594,27 @@ def scan_dart_file(filepath: str):
         line = source_text[:m.start()].count("\n") + 1
         snippet = source_text[max(0, m.start() - 120):m.start()]
         has_override = "@override" in snippet.lower()
-        entry = name in DART_ENTRY_POINTS or has_override or is_test or name.startswith("test")
+        # Private Flutter widget helper methods are almost always called
+        # from build() in the same file — treat as entry points
+        # Private Flutter widget/state methods are almost always called
+        # from build(), initState(), or button callbacks in the same file
+        is_private_flutter_helper = (
+            name.startswith("_build") or
+            name.startswith("_show") or
+            name.startswith("_get") or
+            name.startswith("_create") or
+            name.startswith("_make") or
+            name.startswith("_handle") or
+            name.startswith("_validate") or
+            name.startswith("_on") or
+            name.startswith("_check") or
+            name.startswith("_load") or
+            name.startswith("_fetch") or
+            name.startswith("_update") or
+            name.startswith("_navigate") or
+            name.startswith("_format")
+        )
+        entry = name in DART_ENTRY_POINTS or has_override or is_test or name.startswith("test") or is_private_flutter_helper
         defs.append(FunctionDef(
             name=name, file=filepath,
             line=line,
@@ -571,9 +624,20 @@ def scan_dart_file(filepath: str):
         ))
 
     for m in _DART_CALL_RE.finditer(source_text):
-        name = m.group(1)
-        if name not in _DART_SKIP_KEYWORDS:
-            calls.add(name)
+        full_name = m.group(1)
+        if not full_name or full_name in _DART_SKIP_KEYWORDS:
+            continue
+        calls.add(full_name)
+        # For namespaced calls like "DeadlineStatus.critical",
+        # also add a qualified marker so we know "critical" is
+        # used as a property, not a standalone function
+        if '.' in full_name:
+            method_part = full_name.split('.')[-1]
+            # Store as qualified so scorer can distinguish
+            calls.add(f"__qualified__{method_part}")
+        else:
+            # Pure standalone call like critical() 
+            calls.add(full_name)
 
     return defs, calls
 
@@ -641,5 +705,29 @@ def scan_directory(root_dir: str) -> ScanResult:
                 result.all_called_names.update(calls)
             except Exception:
                 pass
+
+    # Import-aware pass for Dart: if file A imports file B,
+    # functions from B should be considered "reachable" from A
+    # This prevents false positives from import-based usage
+    _dart_import_pat = re.compile(r'import .([^.]+).')
+    
+    for filepath in list(result.calls.keys()):
+        if not filepath.endswith('.dart'):
+            continue
+        try:
+            source = Path(filepath).read_text(encoding="utf-8", errors="replace")
+            file_dir = str(Path(filepath).parent)
+            for m in _dart_import_pat.finditer(source):
+                imp = m.group(1)
+                if imp.startswith('package:') or imp.startswith('dart:'):
+                    continue
+                resolved = str(Path(file_dir).joinpath(imp).resolve())
+                # Mark all functions from the imported file as callable
+                for func_name, func_defs in result.definitions.items():
+                    for func_def in func_defs:
+                        if func_def.file == resolved:
+                            result.calls[filepath].add(func_name)
+        except Exception:
+            continue
 
     return result
