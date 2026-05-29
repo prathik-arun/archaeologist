@@ -1,716 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F6TJ29658Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F6TJ29658Y');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dead Code Archaeologist — Excavate. Delete. Ship.</title>
+<title>Archaeologist — Codebase Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a08;
-    --bg2: #111110;
-    --bg3: #1a1a17;
-    --gold: #c9a84c;
-    --gold2: #e8c96d;
-    --gold-dim: #c9a84c33;
-    --cream: #f5f0e8;
-    --muted: #6b6b5f;
-    --red: #e05a3a;
-    --green: #4a9e6b;
-    --border: #2a2a24;
-    --text: #e8e4dc;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; overflow-x: hidden; }
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 1000; opacity: 0.4;
-  }
+  :root{--bg:#0a0a08;--bg2:#111110;--bg3:#1a1a17;--gold:#c9a84c;--gold-dim:#c9a84c22;--cream:#f5f0e8;--muted:#6b6b5f;--red:#e05a3a;--green:#4a9e6b;--border:#2a2a24;--text:#e8e4dc;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden;line-height:1.6;}
 
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.25rem 3rem;
-    border-bottom: 1px solid var(--border);
-    background: rgba(10,10,8,0.88); backdrop-filter: blur(12px);
-  }
-  .nav-logo { font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--gold); display: flex; align-items: center; gap: 10px; }
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-  .nav-links a { font-size: 12px; font-weight: 500; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--gold); }
-  .nav-cta { font-family: 'DM Mono', monospace; font-size: 12px; padding: 8px 18px; border: 1px solid var(--gold); color: var(--gold); background: transparent; cursor: pointer; text-decoration: none; transition: all 0.2s; }
-  .nav-cta:hover { background: var(--gold); color: var(--bg); }
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 3rem;border-bottom:1px solid var(--border);background:rgba(10,10,8,0.92);backdrop-filter:blur(12px);}
+  .logo{font-family:'Instrument Serif',serif;font-size:18px;color:var(--gold);}
+  .nav-links{display:flex;gap:2rem;list-style:none;}
+  .nav-links a{font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-cta{font-family:'DM Mono',monospace;font-size:12px;padding:8px 18px;border:1px solid var(--gold);color:var(--gold);background:transparent;text-decoration:none;transition:all .2s;}
+  .nav-cta:hover{background:var(--gold);color:var(--bg);}
 
-  .hero {
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-    justify-content: center; text-align: center; padding: 8rem 2rem 4rem; position: relative; overflow: hidden;
-  }
-  .hero-glow { position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
-  .hero-grid {
-    position: absolute; inset: 0;
-    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 60px 60px; opacity: 0.3;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
-  }
-  .hero-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold-dim); padding: 6px 16px; margin-bottom: 2.5rem; display: inline-block; animation: fadeUp 0.6s ease both; }
-  .hero-title { font-family: 'Instrument Serif', serif; font-size: clamp(56px, 9vw, 120px); line-height: 0.92; color: var(--cream); margin-bottom: 1rem; animation: fadeUp 0.6s 0.1s ease both; }
-  .hero-title em { font-style: italic; color: var(--gold); }
-  .hero-subtitle { font-size: clamp(15px, 2vw, 18px); color: var(--muted); max-width: 560px; line-height: 1.7; margin: 1.5rem auto 3rem; animation: fadeUp 0.6s 0.2s ease both; }
-  .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; }
-  .btn-primary { font-family: 'DM Mono', monospace; font-size: 13px; padding: 14px 28px; background: var(--gold); color: var(--bg); border: none; cursor: pointer; font-weight: 500; letter-spacing: 0.05em; transition: all 0.2s; text-decoration: none; display: inline-block; }
-  .btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
-  .btn-secondary { font-family: 'DM Mono', monospace; font-size: 13px; padding: 14px 28px; background: transparent; color: var(--text); border: 1px solid var(--border); cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; }
-  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 5rem;position:relative;}
+  .hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.2;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent);}
+  .hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.07),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+  .hero-tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:5px 14px;margin-bottom:2rem;display:inline-block;}
+  .hero-title{font-family:'Instrument Serif',serif;font-size:clamp(52px,10vw,112px);line-height:.9;color:var(--cream);margin-bottom:1.25rem;}
+  .hero-title em{font-style:italic;color:var(--gold);}
+  .hero-sub{font-size:16px;color:var(--muted);max-width:440px;line-height:1.7;margin:0 auto 2.5rem;}
+  .install-pill{font-family:'DM Mono',monospace;font-size:15px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 22px;color:var(--gold);display:inline-flex;align-items:center;gap:14px;margin-bottom:.75rem;}
+  .copy-btn{font-size:11px;padding:3px 10px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:3px;font-family:'DM Mono',monospace;transition:all .15s;}
+  .copy-btn:hover,.copy-btn.done{border-color:var(--gold);color:var(--gold);}
+  .hero-links{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
+  .ghost{font-family:'DM Mono',monospace;font-size:12px;padding:9px 18px;border:1px solid var(--border);color:var(--muted);text-decoration:none;transition:all .2s;display:inline-block;}
+  .ghost:hover{border-color:var(--gold);color:var(--gold);}
 
-  .terminal-wrap { margin: 5rem auto 0; max-width: 740px; width: 100%; animation: fadeUp 0.6s 0.4s ease both; }
-  .terminal { background: #0d0d0b; border: 1px solid var(--border); overflow: hidden; text-align: left; }
-  .terminal-bar { background: var(--bg3); padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
-  .dot { width: 12px; height: 12px; border-radius: 50%; }
-  .dot-r { background: #ff5f57; } .dot-y { background: #ffbd2e; } .dot-g { background: #28c840; }
-  .terminal-title { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-left: 8px; }
-  .terminal-body { padding: 1.5rem; font-family: 'DM Mono', monospace; font-size: 13px; line-height: 2; }
-  .t-prompt { color: var(--gold); } .t-cmd { color: var(--cream); } .t-comment { color: var(--muted); }
-  .t-green { color: #4a9e6b; } .t-red { color: #e05a3a; } .t-yellow { color: #c9a84c; }
-  .t-dim { color: #333; } .t-file { color: #74b9ff; }
+  .terminal-wrap{margin:3rem auto 0;max-width:660px;width:100%;}
+  .terminal{background:#0d0d0b;border:1px solid var(--border);text-align:left;}
+  .t-bar{background:var(--bg3);padding:9px 14px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);}
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .dot-r{background:#ff5f57;}.dot-y{background:#ffbd2e;}.dot-g{background:#28c840;}
+  .t-body{padding:1.25rem 1.5rem;font-family:'DM Mono',monospace;font-size:13px;line-height:1.9;}
+  .tp{color:var(--gold);}.tc{color:var(--cream);}.td{color:#3a3a30;}
+  .tg{color:#4a9e6b;}.ty{color:#c9a84c;}
 
-  .stats-bar { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 3rem 0; display: flex; justify-content: center; }
-  .stat-item { flex: 1; max-width: 220px; text-align: center; padding: 0 2rem; border-right: 1px solid var(--border); }
-  .stat-item:last-child { border-right: none; }
-  .stat-n { font-family: 'Instrument Serif', serif; font-size: 52px; color: var(--gold); line-height: 1; display: block; }
-  .stat-l { font-size: 12px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px; display: block; }
+  hr{border:none;border-top:1px solid var(--border);}
 
-  section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
-  .section-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; display: block; }
-  .section-title { font-family: 'Instrument Serif', serif; font-size: clamp(36px, 5vw, 56px); line-height: 1.05; color: var(--cream); margin-bottom: 1.5rem; }
-  .section-title em { font-style: italic; color: var(--gold); }
-  .section-body { font-size: 16px; color: var(--muted); line-height: 1.8; max-width: 620px; }
+  /* INSTALL */
+  .install-section{padding:4rem 2rem;max-width:920px;margin:0 auto;}
+  .s-tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;display:block;}
+  .s-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,4vw,44px);line-height:1.05;color:var(--cream);margin-bottom:.75rem;}
+  .s-title em{font-style:italic;color:var(--gold);}
+  .install-box{background:var(--bg2);border:1px solid var(--border);padding:2rem;margin-top:1.5rem;position:relative;overflow:hidden;}
+  .install-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .ex{background:var(--bg);border:1px solid var(--border);margin-bottom:.5rem;}
+  .ex-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:1px solid var(--border);}
+  .ex-code{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:1rem;overflow-x:auto;}
+  .cp{font-size:10px;padding:3px 8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:3px;font-family:'DM Mono',monospace;flex-shrink:0;transition:all .15s;}
+  .cp:hover,.cp.done{border-color:var(--gold);color:var(--gold);}
+  .note{padding:10px 14px;font-size:13px;color:var(--muted);line-height:1.6;margin-top:.5rem;}
+  .note.g{background:#0a1a0a;border-left:3px solid var(--green);}
+  .note.a{background:#1a1200;border-left:3px solid var(--gold);}
+  .note.r{background:#1a0808;border-left:3px solid var(--red);}
 
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; margin-top: 4rem; border: 1px solid var(--border); }
-  .step { padding: 2.5rem; border-right: 1px solid var(--border); transition: background 0.2s; }
-  .step:last-child { border-right: none; }
-  .step:hover { background: var(--bg2); }
-  .step-num { font-family: 'Instrument Serif', serif; font-size: 64px; color: var(--gold-dim); line-height: 1; margin-bottom: 1.5rem; display: block; }
-  .step-title { font-size: 16px; font-weight: 600; color: var(--cream); margin-bottom: 0.75rem; }
-  .step-body { font-size: 14px; color: var(--muted); line-height: 1.7; }
+  /* TOOLS */
+  .tools-section{padding:5rem 2rem;max-width:920px;margin:0 auto;}
+  .tools-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--border);margin-top:2rem;}
+  .tool-tab{background:var(--bg2);padding:1.5rem 1rem;cursor:pointer;transition:all .15s;border-top:2px solid transparent;text-align:center;}
+  .tool-tab:hover{background:var(--bg3);}
+  .tool-tab.active{background:var(--bg3);border-top-color:var(--gold);}
+  .tab-icon{font-size:22px;margin-bottom:.5rem;display:block;}
+  .tab-name{font-size:12px;font-weight:600;color:var(--muted);line-height:1.3;}
+  .tool-tab.active .tab-name{color:var(--gold);}
 
-  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 4rem; background: var(--border); }
-  .compare-col { background: var(--bg); padding: 2.5rem; }
-  .compare-col.theirs { background: var(--bg2); }
-  .compare-header { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
-  .badge { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 10px; border-radius: 99px; }
-  .badge-old { background: #2a1a1a; color: var(--red); border: 1px solid #3a1a1a; }
-  .badge-new { background: #1a2a1a; color: var(--green); border: 1px solid #1a3a1a; }
-  .compare-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.25rem; font-size: 14px; color: var(--muted); line-height: 1.5; }
-  .compare-item .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .panel{display:none;margin-top:2px;background:var(--bg2);border:1px solid var(--border);padding:2rem;}
+  .panel.active{display:block;}
+  .panel-title{font-size:17px;font-weight:600;color:var(--cream);margin-bottom:.4rem;}
+  .panel-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;max-width:560px;}
 
-  /* ── Big command reference ── */
-  .cmd-section { margin-top: 4rem; }
-  .cmd-block { border: 1px solid var(--border); margin-bottom: 2px; background: var(--bg2); overflow: hidden; }
-  .cmd-block-header { padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid var(--border); background: var(--bg3); cursor: pointer; user-select: none; }
-  .cmd-block-header:hover { background: #1f1f1c; }
-  .cmd-name { font-family: 'DM Mono', monospace; font-size: 15px; color: var(--gold); flex-shrink: 0; }
-  .cmd-oneline { font-size: 13px; color: var(--muted); }
-  .cmd-arrow { margin-left: auto; color: var(--muted); font-size: 18px; transition: transform 0.2s; }
-  .cmd-block.open .cmd-arrow { transform: rotate(90deg); }
-  .cmd-body { display: none; padding: 2rem; }
-  .cmd-block.open .cmd-body { display: block; }
-  .cmd-full-code { font-family: 'DM Mono', monospace; font-size: 14px; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--gold); padding: 1rem 1.5rem; color: var(--gold); margin-bottom: 1.5rem; overflow-x: auto; white-space: nowrap; }
-  .cmd-what { font-size: 14px; color: var(--text); line-height: 1.8; margin-bottom: 1.5rem; }
-  .cmd-flags { display: flex; flex-direction: column; gap: 10px; }
-  .cmd-flag { display: grid; grid-template-columns: 220px 1fr; gap: 1rem; align-items: start; font-size: 13px; }
-  .flag-name { font-family: 'DM Mono', monospace; color: var(--gold2); }
-  .flag-desc { color: var(--muted); line-height: 1.6; }
-  .cmd-note { margin-top: 1.5rem; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--green); padding: 1rem 1.5rem; font-size: 13px; color: var(--muted); line-height: 1.7; }
-  .cmd-note strong { color: var(--text); }
-  .cmd-warn { margin-top: 1rem; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--red); padding: 1rem 1.5rem; font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .cmd-block{border:1px solid var(--border);margin-bottom:6px;overflow:hidden;}
+  .cmd-head{padding:.875rem 1.25rem;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center;background:var(--bg3);}
+  .cmd-head:hover{background:#1f1f1c;}
+  .cmd-syn{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);}
+  .cmd-one{font-size:12px;color:var(--muted);}
+  .arrow{color:var(--muted);font-size:15px;transition:transform .2s;}
+  .cmd-block.open .arrow{transform:rotate(90deg);}
+  .cmd-body{display:none;padding:1.25rem;border-top:1px solid var(--border);}
+  .cmd-block.open .cmd-body{display:block;}
 
-  /* ── Git flow ── */
-  .git-flow { margin-top: 3rem; display: flex; flex-direction: column; gap: 2px; }
-  .git-step { display: grid; grid-template-columns: 48px 1fr; gap: 1.5rem; align-items: start; background: var(--bg2); border: 1px solid var(--border); padding: 1.5rem 2rem; }
-  .git-step-num { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--gold-dim); line-height: 1; padding-top: 4px; }
-  .git-step-content {}
-  .git-step-title { font-size: 15px; font-weight: 600; color: var(--cream); margin-bottom: 6px; }
-  .git-step-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
-  .git-code { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; color: var(--gold); display: inline-block; }
-  .git-tag { font-family: 'DM Mono', monospace; font-size: 11px; padding: 2px 10px; border-radius: 99px; display: inline-block; margin-top: 6px; }
-  .git-tag-safe { background: #1a2a1a; color: var(--green); border: 1px solid #1a3a1a; }
-  .git-tag-warn { background: #2a1a0a; color: #e8a84c; border: 1px solid #3a2a0a; }
+  .badge{font-family:'DM Mono',monospace;font-size:10px;padding:2px 7px;border-radius:99px;}
+  .b-s{background:#0a1a0a;color:var(--green);border:1px solid #1a3a1a;}
+  .b-b{background:#2a1500;color:#e8a84c;border:1px solid #3a2000;}
+  .b-r{background:#2a0a0a;color:var(--red);border:1px solid #3a1010;}
 
-  /* ── Confidence detail ── */
-  .conf-table { margin-top: 3rem; border: 1px solid var(--border); overflow: hidden; }
-  .conf-row { display: grid; grid-template-columns: 60px 160px 1fr 80px; align-items: center; gap: 1.5rem; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); }
-  .conf-row:last-child { border-bottom: none; }
-  .conf-row.header { background: var(--bg3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-  .conf-pts { font-family: 'Instrument Serif', serif; font-size: 28px; color: var(--gold); }
-  .conf-signal { font-size: 14px; font-weight: 600; color: var(--cream); }
-  .conf-explain { font-size: 13px; color: var(--muted); line-height: 1.6; }
-  .conf-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .conf-bar-fill { height: 6px; background: var(--gold); border-radius: 3px; }
+  .flags{margin-top:1.25rem;}
+  .ft{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .flag{display:grid;grid-template-columns:190px 1fr;gap:1rem;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+  .flag:last-child{border-bottom:none;}
+  .fn{font-family:'DM Mono',monospace;color:#e8c96d;}
+  .fd{color:var(--muted);}
 
-  /* ── Verdict table ── */
-  .verdict-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem; background: var(--border); }
-  .verdict-col { padding: 2rem; }
-  .verdict-col.safe { background: #0d1a0d; }
-  .verdict-col.review { background: #1a1500; }
-  .verdict-col.runtime { background: #0d0d1a; }
-  .verdict-label { font-size: 13px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; }
-  .verdict-label.safe { color: var(--green); }
-  .verdict-label.review { color: #c9a84c; }
-  .verdict-label.runtime { color: #74b9ff; }
-  .verdict-range { font-family: 'Instrument Serif', serif; font-size: 40px; margin-bottom: 1rem; color: var(--cream); }
-  .verdict-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
-  .verdict-action { font-family: 'DM Mono', monospace; font-size: 11px; margin-top: 1rem; padding: 6px 12px; display: inline-block; }
-  .verdict-action.safe { background: #1a2a1a; color: var(--green); }
-  .verdict-action.review { background: #2a2000; color: #c9a84c; }
-  .verdict-action.runtime { background: #0d0d2a; color: #74b9ff; }
+  /* GIT */
+  .git-section{padding:5rem 2rem;max-width:920px;margin:0 auto;}
+  .git-step{display:grid;grid-template-columns:40px 1fr;gap:1.25rem;background:var(--bg2);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:2px;}
+  .git-n{font-family:'Instrument Serif',serif;font-size:26px;color:var(--gold-dim);}
+  .git-t{font-size:14px;font-weight:600;color:var(--cream);margin-bottom:4px;}
+  .git-d{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:6px;}
+  .git-c{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);padding:5px 10px;color:var(--gold);display:inline-block;margin-bottom:3px;}
 
-  /* ── Report section ── */
-  .report-block { background: var(--bg2); border: 1px solid var(--border); padding: 2.5rem; margin-top: 3rem; position: relative; overflow: hidden; }
-  .report-block::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-  .report-step { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 2rem; }
-  .report-step:last-child { margin-bottom: 0; }
-  .report-num { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--gold-dim); line-height: 1; flex-shrink: 0; width: 36px; }
-  .report-content { flex: 1; }
-  .report-label { font-size: 14px; font-weight: 600; color: var(--cream); margin-bottom: 6px; }
-  .report-code { font-family: 'DM Mono', monospace; font-size: 13px; background: var(--bg3); border: 1px solid var(--border); padding: 10px 16px; color: var(--gold); display: inline-block; margin-bottom: 6px; }
-  .report-note { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  /* LANGS */
+  .lang-section{padding:5rem 2rem;max-width:920px;margin:0 auto;}
+  .lang-lbl{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:.75rem;}
+  .lang-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem;}
+  .lang-pill{font-family:'DM Mono',monospace;font-size:12px;padding:6px 14px;border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;gap:6px;}
+  .dot2{width:6px;height:6px;border-radius:50%;}
 
-  .lang-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 3rem; }
-  .lang-pill { font-family: 'DM Mono', monospace; font-size: 13px; padding: 10px 20px; border: 1px solid var(--border); color: var(--muted); transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-  .lang-pill:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
-  .dot2 { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
+  /* COMPARE */
+  .compare-section{padding:5rem 2rem;max-width:920px;margin:0 auto;}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);margin-top:2rem;}
+  .cc{padding:2rem;background:var(--bg);}
+  .cc.t{background:var(--bg2);}
+  .cc-h{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.25rem;}
+  .ci{display:flex;gap:10px;margin-bottom:.875rem;font-size:13px;color:var(--muted);line-height:1.4;}
 
-  .full-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+  /* FLOATING */
+  .floating{position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+  .floating a{font-family:'DM Mono',monospace;font-size:11px;padding:5px 12px;text-decoration:none;transition:all .2s;}
+  .fa{background:var(--bg2);border:1px solid var(--gold);color:var(--gold);}
+  .fa:hover{background:var(--gold);color:var(--bg);}
+  .fb{background:var(--bg2);border:1px solid var(--border);color:var(--muted);}
+  .fb:hover{border-color:var(--gold);color:var(--gold);}
 
-  footer { border-top: 1px solid var(--border); padding: 3rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-  .footer-logo { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--gold); }
-  .footer-note { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  footer{border-top:1px solid var(--border);padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .f-logo{font-family:'Instrument Serif',serif;font-size:18px;color:var(--gold);}
+  .f-links{display:flex;gap:1.5rem;}
+  .f-links a{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-decoration:none;}
+  .f-links a:hover{color:var(--gold);}
 
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); }
+  [data-tip]{position:relative;cursor:help;}
+  [data-tip]:hover::before{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a17;border:1px solid var(--border);color:var(--muted);font-size:12px;font-family:'Syne',sans-serif;line-height:1.6;padding:8px 12px;border-radius:6px;width:220px;text-align:left;pointer-events:none;z-index:999;white-space:normal;box-shadow:0 4px 16px rgba(0,0,0,.5);}
 
-  @media (max-width: 768px) {
-    nav { padding: 1rem 1.5rem; } .nav-links { display: none; }
-    .compare-grid { grid-template-columns: 1fr; }
-    .verdict-grid { grid-template-columns: 1fr; }
-    .conf-row { grid-template-columns: 48px 1fr; }
-    .conf-row .conf-explain, .conf-row .conf-bar-wrap { display: none; }
-    .cmd-flag { grid-template-columns: 1fr; }
-    .stats-bar { flex-wrap: wrap; }
-    .stat-item { border-right: none; border-bottom: 1px solid var(--border); min-width: 150px; }
-    footer { flex-direction: column; text-align: center; }
-  }
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);}
+  @media(max-width:768px){nav{padding:1rem 1.5rem;}.nav-links{display:none;}.tools-grid{grid-template-columns:repeat(3,1fr);}.compare{grid-template-columns:1fr;}.flag{grid-template-columns:1fr;}.floating{display:none;}footer{flex-direction:column;}}
 </style>
 </head>
 <body>
 
-
-<div style="position:fixed;bottom:2rem;right:2rem;z-index:200;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-  <a href="https://pypi.org/project/archaeologist" target="_blank" style="font-family:'DM Mono',monospace;font-size:11px;padding:6px 14px;background:#1a1a17;border:1px solid #c9a84c;color:#c9a84c;text-decoration:none;display:flex;align-items:center;gap:8px;transition:all 0.2s" onmouseover="this.style.background='#c9a84c';this.style.color='#0a0a08'" onmouseout="this.style.background='#1a1a17';this.style.color='#c9a84c'">
-    📦 pypi.org/project/archaeologist
-  </a>
-  <a href="https://github.com/prathik-arun/deadcode-archaeologist" target="_blank" style="font-family:'DM Mono',monospace;font-size:11px;padding:6px 14px;background:#1a1a17;border:1px solid #2a2a24;color:#6b6b5f;text-decoration:none;display:flex;align-items:center;gap:8px;transition:all 0.2s" onmouseover="this.style.borderColor='#c9a84c';this.style.color='#c9a84c'" onmouseout="this.style.borderColor='#2a2a24';this.style.color='#6b6b5f'">
-    ☆ github.com/prathik-arun/deadcode-archaeologist
-  </a>
-</div>
 <nav>
-  <div class="nav-logo">☠ Dead Code Archaeologist</div>
+  <div class="logo">☠ Archaeologist</div>
   <ul class="nav-links">
-    <li><a href="#how">How it works</a></li>
-    <li><a href="#commands">Commands</a></li>
-    <li><a href="#git">Git flow</a></li>
-    <li><a href="#confidence">Confidence</a></li>
-    <li><a href="#report">HTML Report</a></li>
     <li><a href="#install">Install</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#git">Git flow</a></li>
+    <li><a href="#languages">Languages</a></li>
   </ul>
   <a href="#install" class="nav-cta">Get Started →</a>
 </nav>
 
-<!-- Hero -->
+<!-- HERO -->
 <div class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <span class="hero-tag">Open Source · Python · 9 Languages · pypi.org/project/archaeologist</span>
-  <h1 class="hero-title">Excavate.<br><em>Delete.</em><br>Ship.</h1>
-  <p class="hero-subtitle">Dead Code Archaeologist finds unused functions in your codebase, ranks them by confidence using 5 signals including git history, and automatically opens a clean-up PR — with your tests verified first.</p>
-  <div class="hero-actions">
-    <a href="#install" class="btn-primary">pip3 install archaeologist →</a>
-    <a href="#commands" class="btn-secondary">See all commands</a>
+  <span class="hero-tag">Free · Open Source · 9 Languages</span>
+  <h1 class="hero-title">Codebase<br><em>intelligence.</em></h1>
+  <p class="hero-sub">Five tools to understand, clean, and improve your codebase — all from one install.</p>
+  <div class="install-pill">
+    <span>pip3 install archaeologist</span>
+    <button class="copy-btn" onclick="copyText(this,'pip3 install archaeologist')">copy</button>
+  </div>
+  <div class="hero-links">
+    <a href="#tools" class="ghost">See all tools →</a>
+    <a href="https://github.com/prathik-arun/deadcode-archaeologist" target="_blank" class="ghost">GitHub →</a>
+    <a href="https://pypi.org/project/archaeologist" target="_blank" class="ghost">PyPI →</a>
   </div>
   <div class="terminal-wrap">
     <div class="terminal">
-      <div class="terminal-bar">
-        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-        <span class="terminal-title">terminal</span>
-      </div>
-      <div class="terminal-body">
-        <div><span class="t-prompt">$ </span><span class="t-cmd">python3 clean.py ./ngage --min-confidence 85</span></div>
-        <div class="t-dim">────────────────────────────────────────────────────</div>
-        <div><span class="t-comment">  Found </span><span class="t-yellow">7,098</span><span class="t-comment"> functions across </span><span class="t-yellow">584</span><span class="t-comment"> files</span></div>
-        <div><span class="t-comment">  Analyzing git history for all 584 files...</span></div>
-        <div><span class="t-comment">  Scoring with 5-signal confidence engine...</span></div>
+      <div class="t-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <div class="t-body">
+        <div><span class="tp">$ </span><span class="tc">deadcode ./my-project --explain</span></div>
+        <div><span class="ty">  85%</span><span class="td"> clearLocalLogs · logger.dart · 10mo untouched · No callers</span></div>
         <div>&nbsp;</div>
-        <div><span class="t-green">  928</span><span class="t-comment"> safe to delete &nbsp;&nbsp; </span><span class="t-yellow">3015</span><span class="t-comment"> review first</span></div>
+        <div><span class="tp">$ </span><span class="tc">archaeologist-impact ./my-project user_service.dart</span></div>
+        <div class="tg">  Blast radius: 42/100 MEDIUM · 8 callers · 3 test files</div>
         <div>&nbsp;</div>
-        <div><span class="t-yellow">  85% </span><span class="t-file">clearLocalLogs &nbsp;&nbsp;&nbsp;</span><span class="t-comment"> lib/utils/logger.dart:282 &nbsp; 10mo untouched</span></div>
-        <div><span class="t-yellow">  85% </span><span class="t-file">exportLogsAsJson &nbsp;</span><span class="t-comment"> lib/utils/logger.dart:305 &nbsp; 10mo untouched</span></div>
-        <div><span class="t-yellow">  85% </span><span class="t-file">getUserProfileV1 &nbsp;</span><span class="t-comment"> lib/services/user.dart:44 &nbsp; 1yr untouched</span></div>
-        <div class="t-dim">  ... and 47 more</div>
-        <div>&nbsp;</div>
-        <div><span class="t-comment">  Proceed with deleting 50 functions? [y/n]: </span><span class="t-cmd">y</span></div>
-        <div><span class="t-green">  ✓</span><span class="t-comment"> Created branch </span><span class="t-file">deadcode/cleanup-2026-05-24</span></div>
-        <div><span class="t-green">  ✓</span><span class="t-comment"> Deleted 50 functions surgically from source files</span></div>
-        <div><span class="t-green">  ✓</span><span class="t-comment"> flutter test — all 142 tests passed</span></div>
-        <div><span class="t-green">  ✓</span><span class="t-comment"> PR opened → github.com/kiro/ngage/pull/847</span></div>
+        <div><span class="tp">$ </span><span class="tc">archaeologist-complexity ./my-project --html</span></div>
+        <div class="tg">  ✓ Report opened · 12 very complex · 34 complex functions</div>
       </div>
     </div>
   </div>
 </div>
+<hr>
 
-<div class="stats-bar">
-  <div class="stat-item"><span class="stat-n">9</span><span class="stat-l">Languages</span></div>
-  <div class="stat-item"><span class="stat-n">5</span><span class="stat-l">Confidence signals</span></div>
-  <div class="stat-item"><span class="stat-n">0</span><span class="stat-l">Risk to main branch</span></div>
-  <div class="stat-item"><span class="stat-n">1</span><span class="stat-l">Command to clean</span></div>
-</div>
-<hr class="full-divider">
-
-<!-- How it works -->
-<section id="how">
-  <span class="section-tag">// how_it_works</span>
-  <h2 class="section-title">Not just a linter.<br><em>A full pipeline.</em></h2>
-  <p class="section-body">Most dead code tools stop at detection — they hand you a list of 500 warnings and wish you luck. Dead Code Archaeologist goes all the way: scan, score, delete, test, and open a PR.</p>
-  <div class="steps">
-    <div class="step"><span class="step-num">01</span><div class="step-title">AST scan</div><div class="step-body">Tree-sitter parses every function definition and every function call across all 9 supported languages, building a complete call graph of your project.</div></div>
-    <div class="step"><span class="step-num">02</span><div class="step-title">Git analysis</div><div class="step-body">Every file is checked against git history — when it was last touched, how many authors ever committed to it, and how many total commits it has received.</div></div>
-    <div class="step"><span class="step-num">03</span><div class="step-title">Confidence scoring</div><div class="step-body">Five signals combine into a 0–100 score. Only functions scoring above your chosen threshold are flagged — reducing false positives dramatically.</div></div>
-    <div class="step"><span class="step-num">04</span><div class="step-title">Surgical deletion</div><div class="step-body">Functions are removed by precise byte ranges from the AST — including decorators and annotations — leaving no orphaned blank lines or broken syntax.</div></div>
-    <div class="step"><span class="step-num">05</span><div class="step-title">Tests run first</div><div class="step-body">Your test suite runs automatically. If anything fails, the branch is deleted and your codebase is restored exactly as it was. Nothing is committed unless tests pass.</div></div>
-    <div class="step"><span class="step-num">06</span><div class="step-title">PR opened</div><div class="step-body">A GitHub PR is opened with a full description of every deleted function, its file location, confidence score, and the reasons it was flagged.</div></div>
+<!-- INSTALL -->
+<div class="install-section" id="install">
+  <span class="s-tag">// install</span>
+  <h2 class="s-title">One command.<br><em>All five tools.</em></h2>
+  <div class="install-box">
+    <div class="ex" style="max-width:400px">
+      <div class="ex-lbl">Install</div>
+      <div class="ex-code">pip3 install archaeologist<button class="cp" onclick="copyCode(this)">copy</button></div>
+    </div>
+    <div class="note g" style="max-width:500px;margin-top:1rem">Requires Python 3.11+. After install, all commands work from anywhere — no need to navigate to a specific folder.</div>
+    <div class="note a" style="max-width:500px">To upgrade: <code style="font-family:'DM Mono',monospace;color:var(--gold)">pip3 install --upgrade archaeologist</code></div>
   </div>
-</section>
-<hr class="full-divider">
+</div>
+<hr>
 
-<!-- Commands -->
-<section id="commands">
-  <span class="section-tag">// commands_reference</span>
-  <h2 class="section-title">Every command,<br><em>explained fully.</em></h2>
-  <p class="section-body">Click any command to expand the full documentation — every flag, what it does, when to use it, and what to expect.</p>
+<!-- TOOLS -->
+<div class="tools-section" id="tools">
+  <span class="s-tag">// tools</span>
+  <h2 class="s-title">Five tools.<br><em>Click one to explore.</em></h2>
 
-  <div class="cmd-section">
+  <div class="tools-grid">
+    <div class="tool-tab active" id="tab-unused" onclick="pick('unused')">
+      <span class="tab-icon">☠</span>
+      <div class="tab-name">Unused Code<br>Finder</div>
+    </div>
+    <div class="tool-tab" id="tab-graph" onclick="pick('graph')">
+      <span class="tab-icon">⬡</span>
+      <div class="tab-name">Codebase<br>Graph</div>
+    </div>
+    <div class="tool-tab" id="tab-impact" onclick="pick('impact')">
+      <span class="tab-icon">◎</span>
+      <div class="tab-name">Change<br>Impact</div>
+    </div>
+    <div class="tool-tab" id="tab-complexity" onclick="pick('complexity')">
+      <span class="tab-icon">◈</span>
+      <div class="tab-name">Complexity<br>Scorer</div>
+    </div>
+    <div class="tool-tab" id="tab-dupes" onclick="pick('dupes')">
+      <span class="tab-icon">⧉</span>
+      <div class="tab-name">Duplicate<br>Detector</div>
+    </div>
+  </div>
 
-    <!-- main.py scan -->
+  <!-- UNUSED -->
+  <div class="panel active" id="panel-unused">
+    <div class="panel-title">☠ Unused Code Finder</div>
+    <div class="panel-desc">Finds functions nobody calls. Combines static analysis with git history into a confidence score. Can auto-delete on a new branch, run your tests, and open a PR.</div>
+
     <div class="cmd-block open">
-      <div class="cmd-block-header" onclick="toggle(this)">
-        <span class="cmd-name">python3 main.py [path]</span>
-        <span class="cmd-oneline">Scan a project and print a ranked table of dead code suspects</span>
-        <span class="cmd-arrow">›</span>
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">deadcode [path]</span>
+        <span class="cmd-one">Scan and show results — read only, no changes</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-s">STABLE</span><span class="arrow">›</span></div>
       </div>
       <div class="cmd-body">
-        <div class="cmd-full-code">python3 main.py ./my-project --explain --min-confidence 50</div>
-        <div class="cmd-what">
-          This is the <strong>read-only scan command</strong>. It never modifies any files. It scans your entire project, builds a call graph, analyzes git history, scores every function, and prints a ranked table directly in your terminal. Use this first to understand what the tool finds before deciding to delete anything.<br><br>
-          The output shows a confidence bar (filled blocks = higher confidence), the function name, the file and line number, the verdict label, and — with <code>--explain</code> — a plain-English reason for why it was flagged.
+        <div class="ex"><div class="ex-lbl">Basic scan</div><div class="ex-code">deadcode ./my-project --explain<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">High confidence only</div><div class="ex-code">deadcode ./my-project --min-confidence 80<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="flags"><div class="ft">Key flags</div>
+          <div class="flag"><span class="fn">--explain</span><span class="fd">Show why each function was flagged</span></div>
+          <div class="flag"><span class="fn">--min-confidence 75</span><span class="fd">Only show above this score (default: 40)</span></div>
+          <div class="flag"><span class="fn">--no-git</span><span class="fd">Skip git history — faster, less accurate</span></div>
         </div>
-        <div class="cmd-flags">
-          <div class="cmd-flag"><span class="flag-name">--explain</span><span class="flag-desc">Shows a human-readable reason next to each result — e.g. "No callers found · Last touched 14 months ago · Only 1 author". Always use this so you understand why something was flagged.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--min-confidence 50</span><span class="flag-desc">Only show functions with a confidence score of 50 or above. Default is 40. Lower = more results (more noise). Higher = fewer results (more certainty). We recommend 75+ for anything you'd consider deleting.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--limit 100</span><span class="flag-desc">How many results to show in the terminal. Default is 50. Use --limit 500 to see the full list. Results are always sorted highest confidence first.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--json-output</span><span class="flag-desc">Instead of a terminal table, outputs the full results as a JSON object to stdout. Pipe this into a file with <code>> report.json</code> and use it to feed dashboards, CI systems, or Slack bots.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--no-git</span><span class="flag-desc">Skips the git history analysis entirely. Faster, but the scores will be lower and less accurate since git age and author signals won't be applied. Use this on repos with no git history.</span></div>
-        </div>
-        <div class="cmd-note"><strong>Tip:</strong> Run this first, always. It's completely safe — nothing is modified. Use it to get a feel for what the tool finds in your codebase before touching anything.</div>
       </div>
     </div>
 
-    <!-- report.py -->
     <div class="cmd-block">
-      <div class="cmd-block-header" onclick="toggle(this)">
-        <span class="cmd-name">python3 report.py [path]</span>
-        <span class="cmd-oneline">Generate a full interactive HTML report — open it in your browser</span>
-        <span class="cmd-arrow">›</span>
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">deadcode-report [path]</span>
+        <span class="cmd-one">Generate a shareable HTML dashboard</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-s">STABLE</span><span class="arrow">›</span></div>
       </div>
       <div class="cmd-body">
-        <div class="cmd-full-code">python3 report.py ./my-project --output dead_code_report.html</div>
-        <div class="cmd-what">
-          This generates a <strong>full HTML dashboard</strong> you can open in any browser. It contains every dead code candidate in a filterable, searchable table — with confidence bars, verdicts, language badges, and reasons. Perfect for sharing with your team before deciding what to clean up.<br><br>
-          After running the command, it prints the path to the HTML file and a command to open it. On Mac, run <code>open dead_code_report.html</code> — your browser opens immediately with the full interactive report. The file is fully self-contained — no internet required, no server needed.
-        </div>
-        <div class="cmd-flags">
-          <div class="cmd-flag"><span class="flag-name">--output report.html</span><span class="flag-desc">Where to save the HTML file. Defaults to <code>dead_code_report.html</code> in the current directory. You can give it any path — e.g. <code>~/Desktop/ngage_dead_code.html</code>.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--no-git</span><span class="flag-desc">Skip git analysis. Faster but less accurate scores. The report will still show all results, just with lower confidence values.</span></div>
-        </div>
-        <div class="cmd-note">
-          <strong>What the report shows:</strong> A filter bar (All / Safe to delete / Review first / Needs runtime data), a language dropdown to filter by Dart, Python, etc., a search box to find specific functions or files, and a full table with confidence bars, verdicts, file paths with line numbers, and reasons. <strong>Share the HTML file with your team</strong> — they can open it without installing anything.
-        </div>
-        <div class="cmd-note" style="margin-top:10px"><strong>To open on Mac:</strong> <code style="font-family:'DM Mono',monospace;color:var(--gold)">open dead_code_report.html</code> — opens in your default browser instantly.</div>
+        <div class="ex"><div class="ex-lbl">Generate and open</div><div class="ex-code">deadcode-report ./my-project && open dead_code_report.html<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="note g">Teammates can open the HTML file without installing anything.</div>
       </div>
     </div>
 
-    <!-- clean.py dry-run -->
     <div class="cmd-block">
-      <div class="cmd-block-header" onclick="toggle(this)">
-        <span class="cmd-name">python3 clean.py [path] --dry-run</span>
-        <span class="cmd-oneline">Preview exactly what would be deleted — zero changes made</span>
-        <span class="cmd-arrow">›</span>
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">deadcode-clean [path] --dry-run</span>
+        <span class="cmd-one">Preview what would be removed — zero changes</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-b">β BETA</span><span class="arrow">›</span></div>
       </div>
       <div class="cmd-body">
-        <div class="cmd-full-code">python3 clean.py ./my-project --dry-run --min-confidence 85</div>
-        <div class="cmd-what">
-          The dry run is a <strong>completely safe preview</strong>. It runs the full scan and scoring pipeline, shows you exactly which functions would be deleted and why, and then stops. No files are touched, no branches are created, no git commands are run. It's identical to the real clean except nothing happens at the end.<br><br>
-          <strong>Always run this first</strong> before running the actual clean. Review the list carefully. If you see a function that looks like it might still be needed, either increase <code>--min-confidence</code> or manually check it in your editor before proceeding.
-        </div>
-        <div class="cmd-flags">
-          <div class="cmd-flag"><span class="flag-name">--min-confidence 85</span><span class="flag-desc">The confidence threshold for the dry run preview. Functions below this score won't be shown. We recommend 85 for the first time — it gives you a shorter, higher-confidence list that's easier to review.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--limit 20</span><span class="flag-desc">How many candidates to show in the dry run table. Useful to limit the preview to just the most confident results.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--lang dart</span><span class="flag-desc">Only preview dead code in a specific language. Useful to scope the preview to one part of your stack — e.g. just Dart files in a Flutter project.</span></div>
-        </div>
-        <div class="cmd-note"><strong>What to look for in the dry run:</strong> Check for any function whose name suggests it might still be in active use (like <code>_handleSubmit</code> or anything with "current", "active", or "main" in the name). These are the ones to manually verify in your editor before deleting.</div>
-        <div class="cmd-warn"><strong>Watch out for:</strong> Private methods starting with <code>_</code> in Dart/Flutter that are called only within the same file via button callbacks. The static analyzer can sometimes miss these. When in doubt, open the file and search for the function name before deleting.</div>
+        <div class="ex"><div class="ex-lbl">Always start here before the full clean</div><div class="ex-code">deadcode-clean ./my-project --dry-run --min-confidence 85<button class="cp" onclick="copyCode(this)">copy</button></div></div>
       </div>
     </div>
 
-    <!-- clean.py full -->
     <div class="cmd-block">
-      <div class="cmd-block-header" onclick="toggle(this)">
-        <span class="cmd-name">python3 clean.py [path]</span>
-        <span class="cmd-oneline">Full auto-clean — delete, test, commit, open PR</span>
-        <span class="cmd-arrow">›</span>
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">deadcode-clean [path]</span>
+        <span class="cmd-one">Auto-clean — branch, delete, test, PR</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-b">β BETA</span><span class="badge b-r" data-tip="Creates an isolated branch. Your main branch is never touched. Auto-rolls back if tests fail.">⚠ RISK</span><span class="arrow">›</span></div>
       </div>
       <div class="cmd-body">
-        <div class="cmd-full-code">python3 clean.py ./my-project --min-confidence 85 --limit 20</div>
-        <div class="cmd-what">
-          This is the <strong>full pipeline command</strong>. It scans your project, scores every function, shows you the list of candidates, asks for your confirmation, then — if you say yes — creates a new git branch, surgically deletes each flagged function from your source files, runs your full test suite, commits the changes, and optionally opens a GitHub PR.<br><br>
-          <strong>Your main branch (prod, main, master) is never touched.</strong> Everything happens on an isolated branch. If tests fail at any point, the branch is deleted and your codebase is restored to exactly how it was.
+        <div class="note r" style="margin-bottom:1rem">Always dry-run first. Your main branch is never touched — auto-rolls back if tests fail.</div>
+        <div class="ex"><div class="ex-lbl">Full auto-clean</div><div class="ex-code">deadcode-clean ./my-project --min-confidence 85<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">Without PR — review branch locally first</div><div class="ex-code">deadcode-clean ./my-project --min-confidence 85 --no-pr<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="flags"><div class="ft">Key flags</div>
+          <div class="flag"><span class="fn">--min-confidence 85</span><span class="fd">Only remove functions scoring 85%+ (higher = safer)</span></div>
+          <div class="flag"><span class="fn">--limit 10</span><span class="fd">Max functions to remove in one run</span></div>
+          <div class="flag"><span class="fn">--no-pr</span><span class="fd">Commit locally, don't push or open PR</span></div>
+          <div class="flag"><span class="fn">--lang dart</span><span class="fd">Only clean a specific language</span></div>
         </div>
-        <div class="cmd-flags">
-          <div class="cmd-flag"><span class="flag-name">--min-confidence 85</span><span class="flag-desc">Only delete functions scoring 85% or above. This is the most important flag. Higher = safer. We recommend starting at 85 for your first run. After you're comfortable with the results, you can lower to 75 to catch more.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--limit 20</span><span class="flag-desc">Maximum number of functions to delete in a single run. Default is 50. We recommend starting with 10–20 on your first real run so the PR is small and easy to review.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--lang dart</span><span class="flag-desc">Only clean files of a specific language. Useful when you want to scope cleanup to one part of your codebase — e.g. run <code>--lang dart</code> for Flutter files only.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--no-pr</span><span class="flag-desc">Deletes the code and commits it to the new branch but does NOT push to GitHub or open a PR. The branch stays local on your machine. Use this to review the changes yourself before pushing.</span></div>
-          <div class="cmd-flag"><span class="flag-name">--no-tests</span><span class="flag-desc">Skips running the test suite. The code is deleted and committed without verification. <strong>Only use this if you don't have a test suite or if Flutter is not installed on the machine running the tool.</strong></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAPH -->
+  <div class="panel" id="panel-graph">
+    <div class="panel-title">⬡ Codebase Graph</div>
+    <div class="panel-desc">Opens an interactive browser map of your codebase. Files are nodes — sized by function count, colored by health. Arrows show which files call which.</div>
+    <div class="cmd-block open">
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">archaeologist-graph [path]</span>
+        <span class="cmd-one">Open interactive graph in browser</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-b">β BETA</span><span class="arrow">›</span></div>
+      </div>
+      <div class="cmd-body">
+        <div class="ex"><div class="ex-lbl">Open in browser</div><div class="ex-code">archaeologist-graph ./my-project<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">Save to share with team</div><div class="ex-code">archaeologist-graph ./my-project --output graph.html<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="flags"><div class="ft">Node colors</div>
+          <div class="flag"><span class="fn" style="color:#534AB7">■ Purple</span><span class="fd">Entry point (main.dart etc.)</span></div>
+          <div class="flag"><span class="fn" style="color:#0F6E56">■ Green</span><span class="fd">Clean — no unused code detected</span></div>
+          <div class="flag"><span class="fn" style="color:#5F5E5A">■ Grey</span><span class="fd">Mixed — some unused functions</span></div>
+          <div class="flag"><span class="fn" style="color:#E24B4A">■ Red</span><span class="fd">Fully unused — entire file may be removable</span></div>
         </div>
-        <div class="cmd-note"><strong>What happens step by step:</strong> (1) Scan runs. (2) Results shown. (3) You confirm with y/n. (4) New branch created. (5) Functions deleted. (6) Tests run. (7) If tests pass → committed. (8) You choose to push and open a PR or keep it local.</div>
-        <div class="cmd-warn"><strong>Before running:</strong> Make sure your working tree is clean — commit or stash any uncommitted changes first. The tool checks for this and will refuse to run if there are pending changes, to avoid any risk of losing your work.</div>
-      </div>
-    </div>
-
-  </div>
-</section>
-<hr class="full-divider">
-
-<!-- Git flow -->
-<section id="git">
-  <span class="section-tag">// git_workflow</span>
-  <h2 class="section-title">What happens<br><em>to your git.</em></h2>
-  <p class="section-body">This is the part most people want to understand clearly. Here's exactly what the tool does to your git history, step by step — and how to merge, review, or roll back.</p>
-
-  <div class="git-flow">
-
-    <div class="git-step">
-      <div class="git-step-num">1</div>
-      <div class="git-step-content">
-        <div class="git-step-title">Your main branch is untouched</div>
-        <div class="git-step-desc">The tool checks which branch you're on (e.g. <code>prod</code>, <code>main</code>, or <code>master</code>) and records it. Every subsequent operation happens on a new isolated branch. Your current branch is never modified in any way.</div>
-        <span class="git-tag git-tag-safe">✓ Zero risk to main branch</span>
-      </div>
-    </div>
-
-    <div class="git-step">
-      <div class="git-step-num">2</div>
-      <div class="git-step-content">
-        <div class="git-step-title">A new cleanup branch is created automatically</div>
-        <div class="git-step-desc">The tool creates a new branch named with today's date — for example <code>deadcode/cleanup-2026-05-24</code>. This is where all deletions happen. If a branch with that name already exists (e.g. you ran it twice today), it adds a timestamp suffix like <code>deadcode/cleanup-2026-05-24-1430</code>.</div>
-        <div class="git-code">git checkout -b deadcode/cleanup-2026-05-24</div>
-      </div>
-    </div>
-
-    <div class="git-step">
-      <div class="git-step-num">3</div>
-      <div class="git-step-content">
-        <div class="git-step-title">Functions are deleted and committed</div>
-        <div class="git-step-desc">Each flagged function is removed from its source file using precise AST byte ranges. Once all deletions are done and tests pass, all modified files are staged and committed in a single commit with a detailed message listing every deleted function, its file location, and its confidence score.</div>
-        <div class="git-code">git add -A && git commit -m "chore: remove 20 dead functions"</div>
-      </div>
-    </div>
-
-    <div class="git-step">
-      <div class="git-step-num">4</div>
-      <div class="git-step-content">
-        <div class="git-step-title">Review the changes on the new branch</div>
-        <div class="git-step-desc">Before merging anything, switch to the cleanup branch and look at what changed. Use your editor or run the git diff command to see every deletion side by side. This is your chance to verify everything looks right.</div>
-        <div class="git-code">cd /path/to/your/project</div>
-        <br>
-        <div class="git-code">git checkout deadcode/cleanup-2026-05-24</div>
-        <br>
-        <div class="git-code">git diff main deadcode/cleanup-2026-05-24</div>
-        <div class="git-step-desc" style="margin-top:10px">You can also open the project in your editor on this branch and run the app manually to verify everything works as expected.</div>
-      </div>
-    </div>
-
-    <div class="git-step">
-      <div class="git-step-num">5</div>
-      <div class="git-step-content">
-        <div class="git-step-title">If everything looks good — merge it</div>
-        <div class="git-step-desc">Switch back to your main branch and merge the cleanup branch in. The deletions are now part of your main codebase.</div>
-        <div class="git-code">git checkout prod</div>
-        <br>
-        <div class="git-code">git merge deadcode/cleanup-2026-05-24</div>
-        <div class="git-step-desc" style="margin-top:10px">Alternatively, if you pushed the branch and opened a PR on GitHub, just click <strong>Merge pull request</strong> in the GitHub UI — same result.</div>
-        <span class="git-tag git-tag-safe">✓ Clean history, one commit per cleanup run</span>
-      </div>
-    </div>
-
-    <div class="git-step">
-      <div class="git-step-num">6</div>
-      <div class="git-step-content">
-        <div class="git-step-title">If something looks wrong — roll back instantly</div>
-        <div class="git-step-desc">If you review the diff and decide you don't want the changes, just go back to your main branch and delete the cleanup branch. Your main branch was never touched, so nothing has changed.</div>
-        <div class="git-code">git checkout prod</div>
-        <br>
-        <div class="git-code">git branch -D deadcode/cleanup-2026-05-24</div>
-        <div class="git-step-desc" style="margin-top:10px">That's it. One command and it's as if the tool was never run. No traces left, nothing broken.</div>
-        <span class="git-tag git-tag-warn">⚠ Roll back is instant and complete</span>
-      </div>
-    </div>
-
-    <div class="git-step">
-      <div class="git-step-num">7</div>
-      <div class="git-step-content">
-        <div class="git-step-title">Auto-rollback if tests fail</div>
-        <div class="git-step-desc">If the tool runs your test suite and any test fails, it automatically rolls back — deletes the cleanup branch and restores your original branch — without you having to do anything. You'll see an error message explaining which test failed. Nothing is ever committed if tests don't pass.</div>
-        <span class="git-tag git-tag-safe">✓ Automatic — no manual rollback needed</span>
-      </div>
-    </div>
-
-  </div>
-</section>
-<hr class="full-divider">
-
-<!-- HTML Report -->
-<section id="report">
-  <span class="section-tag">// html_report</span>
-  <h2 class="section-title">The interactive<br><em>browser report.</em></h2>
-  <p class="section-body">The HTML report gives you a full dashboard of every dead code candidate in your project — filterable, searchable, and shareable. No server needed. Just one file you open in a browser.</p>
-
-  <div class="report-block">
-    <div class="report-step">
-      <div class="report-num">1</div>
-      <div class="report-content">
-        <div class="report-label">Generate the report</div>
-        <div class="report-code">python3 report.py /path/to/your/project</div>
-        <div class="report-note">Scans the project, analyzes git history, scores every function, and writes a self-contained HTML file. Takes 30–90 seconds for a large project.</div>
-      </div>
-    </div>
-    <div class="report-step">
-      <div class="report-num">2</div>
-      <div class="report-content">
-        <div class="report-label">Save it where you want</div>
-        <div class="report-code">python3 report.py ./ngage --output ~/Desktop/ngage_report.html</div>
-        <div class="report-note">By default the file is saved as <code>dead_code_report.html</code> in your current directory. Use <code>--output</code> to save it anywhere — your Desktop, a shared folder, or a project docs folder.</div>
-      </div>
-    </div>
-    <div class="report-step">
-      <div class="report-num">3</div>
-      <div class="report-content">
-        <div class="report-label">Open it in your browser</div>
-        <div class="report-code">open dead_code_report.html</div>
-        <div class="report-note">On Mac, <code>open</code> opens the file in your default browser. On Windows, double-click the file. On Linux, use <code>xdg-open</code>. No internet connection needed — the file is fully self-contained.</div>
-      </div>
-    </div>
-    <div class="report-step">
-      <div class="report-num">4</div>
-      <div class="report-content">
-        <div class="report-label">Share it with your team</div>
-        <div class="report-note">Send the HTML file to a colleague — they can open it in their browser without installing Python, the tool, or anything else. Use it in a team meeting to decide together what's safe to delete. The filter buttons let you show only "Safe to delete" items to focus the discussion.</div>
+        <div class="note r">Dynamic dispatch and reflection-based calls may not appear as connections. Always verify before removing red nodes.</div>
       </div>
     </div>
   </div>
 
-  <div style="margin-top:2rem;padding:2rem;background:var(--bg2);border:1px solid var(--border)">
-    <div style="font-size:13px;font-weight:600;color:var(--cream);margin-bottom:1rem;letter-spacing:0.05em">WHAT THE REPORT CONTAINS</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem">
-      <div><div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Header stats</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Total functions scanned, number of suspects found, breakdown by verdict label.</div></div>
-      <div><div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Filter buttons</div><div style="font-size:13px;color:var(--muted);line-height:1.6">One-click filters: All, Safe to delete, Review first, Needs runtime data. Count shown on each button.</div></div>
-      <div><div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Language dropdown</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Filter the table to show only Dart, Python, Swift, Go — or any single language in your project.</div></div>
-      <div><div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Search box</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Type any function name or file path to instantly filter the table. Useful for finding all dead code in a specific file.</div></div>
-      <div><div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Confidence bars</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Visual bar per row showing the 0–100 confidence score. Red = very high confidence. Yellow = moderate. Blue = uncertain.</div></div>
-      <div><div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Reasons column</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Plain English explanation of why each function was flagged — "No callers · Last touched 14mo ago · Only 1 author".</div></div>
-    </div>
-  </div>
-</section>
-<hr class="full-divider">
-
-<!-- Confidence score -->
-<section id="confidence">
-  <span class="section-tag">// confidence_scoring</span>
-  <h2 class="section-title">How the score<br><em>is calculated.</em></h2>
-  <p class="section-body">Every function gets a 0–100 confidence score built from five independent signals. The higher the score, the more certain we are that the function is genuinely dead and safe to remove.</p>
-
-  <div class="conf-table">
-    <div class="conf-row header">
-      <div>Pts</div><div>Signal</div><div>How it works</div><div>Weight</div>
-    </div>
-    <div class="conf-row">
-      <div class="conf-pts">45</div>
-      <div class="conf-signal">Call graph</div>
-      <div class="conf-explain">The tool builds a complete map of which functions call which across your entire codebase. If a function has zero inbound calls from non-test, non-entry-point code, it scores the full 45 points. 1 caller = 20pts. 2–3 callers = 8pts. This is the single strongest signal.</div>
-      <div><div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:90%"></div></div></div>
-    </div>
-    <div class="conf-row">
-      <div class="conf-pts">20</div>
-      <div class="conf-signal">Git age</div>
-      <div class="conf-explain">How long ago was this file last committed? A function in a file untouched for 2+ years scores 20pts. 1–2 years = 15pts. 6–12 months = 10pts. 3–6 months = 5pts. Recent activity scores 0 — recently edited code is rarely dead.</div>
-      <div><div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:40%"></div></div></div>
-    </div>
-    <div class="conf-row">
-      <div class="conf-pts">15</div>
-      <div class="conf-signal">Author count</div>
-      <div class="conf-explain">How many unique authors have ever committed to this file? Single-author files score 15pts — they often contain experimental or personal code that wasn't cleaned up. 2 authors = 7pts. 3+ authors = 0pts (actively maintained by the team).</div>
-      <div><div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:30%"></div></div></div>
-    </div>
-    <div class="conf-row">
-      <div class="conf-pts">10</div>
-      <div class="conf-signal">Recursive dead</div>
-      <div class="conf-explain">If all of a function's callers are themselves flagged as dead, the function earns a bonus 10pts. This catches entire dead sub-trees — a cluster of functions that only call each other but are never reached from active code.</div>
-      <div><div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:20%"></div></div></div>
-    </div>
-    <div class="conf-row">
-      <div class="conf-pts">10</div>
-      <div class="conf-signal">Commit count</div>
-      <div class="conf-explain">Files with only 1–2 total commits were almost never revisited after being written — a strong signal of experimental or abandoned code. Low commit count = 7pts bonus on top of the age signal.</div>
-      <div><div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:20%"></div></div></div>
-    </div>
-  </div>
-
-  <div style="margin-top:3rem">
-    <div style="font-size:15px;font-weight:600;color:var(--cream);margin-bottom:1rem">The three verdicts</div>
-  </div>
-  <div class="verdict-grid">
-    <div class="verdict-col safe">
-      <div class="verdict-label safe">Safe to delete</div>
-      <div class="verdict-range">80–100</div>
-      <div class="verdict-desc">Multiple strong signals all agree. No callers found, old git history, single author. These are the functions you can delete with high confidence. The auto-clean command only targets these by default.</div>
-      <span class="verdict-action safe">Auto-deleted by clean.py</span>
-    </div>
-    <div class="verdict-col review">
-      <div class="verdict-label review">Review first</div>
-      <div class="verdict-range">50–79</div>
-      <div class="verdict-desc">Likely dead but the signals aren't fully aligned. Maybe the git history is recent or there's more than one author. Open the file and manually verify before deleting. Use <code>--min-confidence 50</code> to include these in a clean run.</div>
-      <span class="verdict-action review">Manual check recommended</span>
-    </div>
-    <div class="verdict-col runtime">
-      <div class="verdict-label runtime">Needs runtime data</div>
-      <div class="verdict-range">40–49</div>
-      <div class="verdict-desc">Static analysis is uncertain — the function may be called dynamically via reflection, dependency injection, or a string-based dispatch pattern that the AST parser can't trace. Don't delete without adding coverage tracing first.</div>
-      <span class="verdict-action runtime">Add runtime coverage first</span>
-    </div>
-  </div>
-</section>
-<hr class="full-divider">
-
-<!-- Compare -->
-<section id="compare">
-  <span class="section-tag">// vs_others</span>
-  <h2 class="section-title">Every other tool<br><em>stops at a list.</em></h2>
-  <p class="section-body">SonarQube, Vulture, ESLint, ts-prune — they all detect dead code. None of them delete it, test it, and open a PR for you.</p>
-  <div class="compare-grid">
-    <div class="compare-col theirs">
-      <div class="compare-header" style="color:var(--muted)">Existing tools <span class="badge badge-old">The old way</span></div>
-      <div class="compare-item"><span class="icon">✗</span>Static analysis only — no git intelligence. A function untouched for 3 years looks the same as one written yesterday.</div>
-      <div class="compare-item"><span class="icon">✗</span>High false positive rate — teams learn to ignore the warnings entirely after the first few wrong ones.</div>
-      <div class="compare-item"><span class="icon">✗</span>One language per tool. You need Vulture for Python, ts-prune for TypeScript, deadcode for Go — all configured separately.</div>
-      <div class="compare-item"><span class="icon">✗</span>Outputs a list of warnings. You manually delete each one, one by one, hoping nothing breaks.</div>
-      <div class="compare-item"><span class="icon">✗</span>No test verification. If you delete the wrong thing, you find out at runtime in production.</div>
-      <div class="compare-item"><span class="icon">✗</span>No git branch safety. You're editing directly on your working branch.</div>
-      <div class="compare-item"><span class="icon">✗</span>No PR. You do the commit, the description, the review request yourself.</div>
-    </div>
-    <div class="compare-col">
-      <div class="compare-header" style="color:var(--gold)">Dead Code Archaeologist <span class="badge badge-new">The new way</span></div>
-      <div class="compare-item"><span class="icon" style="color:var(--green)">✓</span>Static analysis + git history combined. Age, author count, and commit frequency all factor into the score.</div>
-      <div class="compare-item"><span class="icon" style="color:var(--green)">✓</span>Multi-signal confidence score dramatically reduces false positives. Only flags what multiple signals agree on.</div>
-      <div class="compare-item"><span class="icon" style="color:var(--green)">✓</span>9 languages in one tool. Python, Dart, JS, TS, Go, Java, Rust, Kotlin, Ruby, Swift — one command covers all of them.</div>
-      <div class="compare-item"><span class="icon" style="color:var(--green)">✓</span>Goes all the way to deletion and a merged PR. Scan to clean in one command.</div>
-      <div class="compare-item"><span class="icon" style="color:var(--green)">✓</span>Runs your full test suite before committing. Nothing lands unless tests pass.</div>
-      <div class="compare-item"><span class="icon" style="color:var(--green)">✓</span>Isolated git branch — your main branch is never touched. Roll back in one command.</div>
-      <div class="compare-item"><span class="icon" style="color:var(--green)">✓</span>Auto-opens a GitHub PR with full per-function documentation.</div>
-    </div>
-  </div>
-</section>
-<hr class="full-divider">
-
-<!-- Languages -->
-<section>
-  <span class="section-tag">// supported_languages</span>
-  <h2 class="section-title">One tool.<br><em>Every language.</em></h2>
-  <p class="section-body">Tree-sitter AST grammars for 9 languages. Dart support includes Flutter-aware false positive filtering — <code>build()</code>, <code>initState()</code>, <code>@override</code> methods and Android/iOS/macOS platform callbacks are automatically excluded.</p>
-  <div class="lang-grid">
-    <div class="lang-pill"><div class="dot2"></div>Python</div>
-    <div class="lang-pill"><div class="dot2"></div>Dart / Flutter</div>
-    <div class="lang-pill"><div class="dot2"></div>JavaScript</div>
-    <div class="lang-pill"><div class="dot2"></div>TypeScript</div>
-    <div class="lang-pill"><div class="dot2"></div>Go</div>
-    <div class="lang-pill"><div class="dot2"></div>Java</div>
-    <div class="lang-pill"><div class="dot2"></div>Rust</div>
-    <div class="lang-pill"><div class="dot2"></div>Kotlin</div>
-    <div class="lang-pill"><div class="dot2"></div>Ruby</div>
-    <div class="lang-pill"><div class="dot2"></div>Swift</div>
-  </div>
-</section>
-<hr class="full-divider">
-
-<!-- Install -->
-<section id="install">
-  <span class="section-tag">// getting_started</span>
-  <h2 class="section-title">Start in<br><em>four steps.</em></h2>
-  <p class="section-body">No signup. No account. No cloud. Runs entirely on your machine — your code never leaves your computer.</p>
-  <div class="report-block">
-    <div class="report-step">
-      <div class="report-num">1</div>
-      <div class="report-content">
-        <div class="report-label">Install with pip</div>
-        <div class="report-code">pip3 install archaeologist</div>
-        <div class="report-note">Requires Python 3.11 or newer. Check with <code>python3 --version</code>. That's it — no zip files, no manual setup.</div>
+  <!-- IMPACT -->
+  <div class="panel" id="panel-impact">
+    <div class="panel-title">◎ Change Impact Analyzer</div>
+    <div class="panel-desc">Before changing any file, see what could break — every caller, every importer, test coverage, and a 0–100 blast radius score.</div>
+    <div class="cmd-block open">
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">archaeologist-impact [project] [file]</span>
+        <span class="cmd-one">Analyze blast radius of changing a file</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-s">STABLE</span><span class="arrow">›</span></div>
       </div>
-    </div>
-
-    <div class="report-step">
-      <div class="report-num">2</div>
-      <div class="report-content">
-        <div class="report-label">Run the HTML report first — open it in your browser</div>
-        <div class="report-code">python3 report.py /path/to/your/project && open dead_code_report.html</div>
-        <div class="report-note">This generates a full interactive dashboard of everything the tool finds. Review it before deciding what to delete. Share the HTML file with your team for a group review.</div>
-      </div>
-    </div>
-    <div class="report-step">
-      <div class="report-num">3</div>
-      <div class="report-content">
-        <div class="report-label">Dry run first, then clean</div>
-        <div class="report-code">python3 clean.py /path/to/your/project --dry-run --min-confidence 85</div>
-        <div class="report-note" style="margin-bottom:8px">Preview what would be deleted — zero changes. When you're happy with the list, remove <code>--dry-run</code> to run the full auto-clean.</div>
-        <div class="report-code">python3 clean.py /path/to/your/project --min-confidence 85 --limit 20</div>
-        <div class="report-note">Creates a branch, deletes functions, runs your tests, commits, and asks if you want to open a PR. Your main branch is never touched.</div>
+      <div class="cmd-body">
+        <div class="ex"><div class="ex-lbl">Terminal output</div><div class="ex-code">archaeologist-impact ./my-project user_service.dart<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">Visual HTML report</div><div class="ex-code">archaeologist-impact ./my-project user_service.dart --html<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="flags"><div class="ft">Blast radius score</div>
+          <div class="flag"><span class="fn" style="color:#E24B4A">70–100 HIGH</span><span class="fd">Many callers. Run full test suite. Write tests if none exist.</span></div>
+          <div class="flag"><span class="fn" style="color:#EF9F27">40–69 MEDIUM</span><span class="fd">Several callers. Review them before changing signatures.</span></div>
+          <div class="flag"><span class="fn" style="color:#4a9e6b">0–39 LOW</span><span class="fd">Few or no callers. Safe to change freely.</span></div>
+        </div>
       </div>
     </div>
   </div>
-</section>
+
+  <!-- COMPLEXITY -->
+  <div class="panel" id="panel-complexity">
+    <div class="panel-title">◈ Complexity Scorer</div>
+    <div class="panel-desc">Scores every function on cyclomatic complexity — decision branches, nesting, and length. Ranks worst-first so you know what to refactor.</div>
+    <div class="cmd-block open">
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">archaeologist-complexity [path]</span>
+        <span class="cmd-one">Score complexity of every function</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-s">STABLE</span><span class="arrow">›</span></div>
+      </div>
+      <div class="cmd-body">
+        <div class="ex"><div class="ex-lbl">Terminal output</div><div class="ex-code">archaeologist-complexity ./my-project<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">Visual HTML report</div><div class="ex-code">archaeologist-complexity ./my-project --html<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="flags"><div class="ft">Labels</div>
+          <div class="flag"><span class="fn" style="color:#E24B4A">Very Complex 30+</span><span class="fd">Break into smaller functions</span></div>
+          <div class="flag"><span class="fn" style="color:#EF9F27">Complex 15–29</span><span class="fd">Good candidate for refactoring</span></div>
+          <div class="flag"><span class="fn" style="color:#74b9ff">Moderate 8–14</span><span class="fd">Watch as it grows</span></div>
+          <div class="flag"><span class="fn" style="color:#4a9e6b">Simple 0–7</span><span class="fd">No action needed</span></div>
+        </div>
+        <div class="flags"><div class="ft">Key flags</div>
+          <div class="flag"><span class="fn">--min-score 15</span><span class="fd">Only show above this score (default: 8)</span></div>
+          <div class="flag"><span class="fn">--html</span><span class="fd">Open interactive HTML report</span></div>
+          <div class="flag"><span class="fn">--lang dart</span><span class="fd">Filter by language</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DUPES -->
+  <div class="panel" id="panel-dupes">
+    <div class="panel-title">⧉ Duplicate Detector</div>
+    <div class="panel-desc">Finds copy-paste code and near-identical functions. Detects same names in different files, exact body copies, and high-similarity implementations.</div>
+    <div class="cmd-block open">
+      <div class="cmd-head" onclick="tog(this)">
+        <span class="cmd-syn">archaeologist-dupes [path]</span>
+        <span class="cmd-one">Find duplicate and near-duplicate functions</span>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-s">STABLE</span><span class="arrow">›</span></div>
+      </div>
+      <div class="cmd-body">
+        <div class="ex"><div class="ex-lbl">Terminal output</div><div class="ex-code">archaeologist-dupes ./my-project<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">Visual HTML report</div><div class="ex-code">archaeologist-dupes ./my-project --html<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="flags"><div class="ft">What gets flagged</div>
+          <div class="flag"><span class="fn">Same name, diff files</span><span class="fd">formatDate() in 6 files — consolidate into one</span></div>
+          <div class="flag"><span class="fn">Exact copy-paste</span><span class="fd">Identical function body — 100% confidence</span></div>
+          <div class="flag"><span class="fn">Near-identical</span><span class="fd">Same logic, different variable names</span></div>
+        </div>
+        <div class="flags"><div class="ft">Key flags</div>
+          <div class="flag"><span class="fn">--min-similarity 85</span><span class="fd">Similarity threshold (default: 85)</span></div>
+          <div class="flag"><span class="fn">--html</span><span class="fd">Open interactive HTML report</span></div>
+          <div class="flag"><span class="fn">--lang dart</span><span class="fd">Filter by language</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- GIT -->
+<div class="git-section" id="git">
+  <span class="s-tag">// git flow</span>
+  <h2 class="s-title">Your main branch<br><em>is never touched.</em></h2>
+  <p style="font-size:14px;color:var(--muted);margin:1rem 0 1.5rem">The auto-clean always works on an isolated branch.</p>
+  <div class="git-step"><div class="git-n">1</div><div><div class="git-t">New branch created</div><div class="git-d">Named with today's date — e.g. <code style="font-family:'DM Mono',monospace;color:var(--gold)">cleanup-2026-05-28</code></div></div></div>
+  <div class="git-step"><div class="git-n">2</div><div><div class="git-t">Tests run before anything is committed</div><div class="git-d">Auto-detects Flutter, pytest, Jest, Go, Gradle, Cargo. If tests fail — branch deleted, nothing changes.</div></div></div>
+  <div class="git-step"><div class="git-n">3</div><div><div class="git-t">Review the diff</div><div class="git-c">git checkout cleanup-2026-05-28</div><br><div class="git-c">git diff main cleanup-2026-05-28</div></div></div>
+  <div class="git-step"><div class="git-n">4</div><div><div class="git-t">Merge or roll back</div><div class="git-c">git merge cleanup-2026-05-28</div><br><div class="git-c">git branch -D cleanup-2026-05-28</div></div></div>
+</div>
+<hr>
+
+<!-- LANGUAGES -->
+<div class="lang-section" id="languages">
+  <span class="s-tag">// languages</span>
+  <h2 class="s-title">Nine languages.<br><em>Honest about each.</em></h2>
+  <div style="margin-top:1.5rem">
+    <div class="lang-lbl">Production tested ✓</div>
+    <div class="lang-row">
+      <div class="lang-pill" style="border-color:#0F6E56;color:#4a9e6b"><div class="dot2" style="background:#4a9e6b"></div>Python</div>
+      <div class="lang-pill" style="border-color:#0F6E56;color:#4a9e6b"><div class="dot2" style="background:#4a9e6b"></div>Dart / Flutter</div>
+      <div class="lang-pill" style="border-color:#0F6E56;color:#4a9e6b"><div class="dot2" style="background:#4a9e6b"></div>JavaScript</div>
+      <div class="lang-pill" style="border-color:#0F6E56;color:#4a9e6b"><div class="dot2" style="background:#4a9e6b"></div>TypeScript</div>
+    </div>
+    <div class="lang-lbl">Beta — may have false positives</div>
+    <div class="lang-row">
+      <div class="lang-pill" style="border-color:#c9a84c44;color:#7a6a3a"><div class="dot2" style="background:#c9a84c;opacity:.5"></div>Go β</div>
+      <div class="lang-pill" style="border-color:#c9a84c44;color:#7a6a3a"><div class="dot2" style="background:#c9a84c;opacity:.5"></div>Java β</div>
+      <div class="lang-pill" style="border-color:#c9a84c44;color:#7a6a3a"><div class="dot2" style="background:#c9a84c;opacity:.5"></div>Kotlin β</div>
+      <div class="lang-pill" style="border-color:#c9a84c44;color:#7a6a3a"><div class="dot2" style="background:#c9a84c;opacity:.5"></div>Ruby β</div>
+      <div class="lang-pill" style="border-color:#c9a84c44;color:#7a6a3a"><div class="dot2" style="background:#c9a84c;opacity:.5"></div>Rust β</div>
+      <div class="lang-pill" style="border-color:#c9a84c44;color:#7a6a3a"><div class="dot2" style="background:#c9a84c;opacity:.5"></div>Swift β</div>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- COMPARE -->
+<div class="compare-section">
+  <span class="s-tag">// vs other tools</span>
+  <h2 class="s-title">Other tools give you a list.<br><em>We go further.</em></h2>
+  <div class="compare">
+    <div class="cc t">
+      <div class="cc-h" style="color:var(--muted)">Other tools</div>
+      <div class="ci"><span>✗</span><span>Static analysis only — no git intelligence</span></div>
+      <div class="ci"><span>✗</span><span>One language per tool</span></div>
+      <div class="ci"><span>✗</span><span>Outputs a list — you do the rest manually</span></div>
+      <div class="ci"><span>✗</span><span>No test verification before deletion</span></div>
+      <div class="ci"><span>✗</span><span>No architecture visualization</span></div>
+      <div class="ci"><span>✗</span><span>No change impact analysis</span></div>
+      <div class="ci"><span>✗</span><span>No complexity scoring</span></div>
+      <div class="ci"><span>✗</span><span>No duplicate detection</span></div>
+    </div>
+    <div class="cc">
+      <div class="cc-h" style="color:var(--gold)">Archaeologist</div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>Static analysis + git history combined</span></div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>9 languages, one install</span></div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>All the way to a merged PR</span></div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>Tests run before anything is committed</span></div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>Interactive architecture graph</span></div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>Change impact with blast radius score</span></div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>Cyclomatic complexity scorer</span></div>
+      <div class="ci"><span style="color:var(--green)">✓</span><span>Duplicate and near-duplicate detector</span></div>
+    </div>
+  </div>
+</div>
+<hr>
 
 <footer>
-  <div class="footer-logo">☠ Dead Code Archaeologist</div>
-  <div class="footer-note">Built with tree-sitter · GitPython · Rich · Click</div>
-  <div class="footer-note">Open source · MIT License · Python 3.11+</div>
-  <div style="display:flex;gap:1rem;flex-wrap:wrap"><a href="https://pypi.org/project/archaeologist" style="font-family:'DM Mono',monospace;font-size:11px;color:#c9a84c;text-decoration:none">pypi.org/project/archaeologist</a><a href="https://github.com/prathik-arun/deadcode-archaeologist" style="font-family:'DM Mono',monospace;font-size:11px;color:#6b6b5f;text-decoration:none">github.com/prathik-arun/deadcode-archaeologist</a></div>
+  <div class="f-logo">☠ Archaeologist</div>
+  <div class="f-links">
+    <a href="https://pypi.org/project/archaeologist" target="_blank">PyPI</a>
+    <a href="https://github.com/prathik-arun/deadcode-archaeologist" target="_blank">GitHub</a>
+    <a href="#install">Install</a>
+    <a href="#tools">Tools</a>
+  </div>
+  <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">MIT · Free · Python 3.11+</div>
 </footer>
 
+<div class="floating">
+  <a href="https://pypi.org/project/archaeologist" target="_blank" class="fa">📦 pypi.org/project/archaeologist</a>
+  <a href="https://github.com/prathik-arun/deadcode-archaeologist" target="_blank" class="fb">☆ github.com/prathik-arun</a>
+</div>
+
 <script>
-  function toggle(header) {
-    const block = header.parentElement;
-    block.classList.toggle('open');
-  }
+function pick(t) {
+  document.querySelectorAll('.tool-tab').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('panel-'+t).classList.add('active');
+}
+function tog(h) { h.parentElement.classList.toggle('open'); }
+function copyCode(btn) {
+  const code = btn.previousElementSibling?.textContent?.trim() || '';
+  navigator.clipboard.writeText(code).then(()=>{
+    btn.textContent='copied!';btn.classList.add('done');
+    setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},2000);
+  });
+}
+function copyText(btn,text) {
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='copied!';btn.classList.add('done');
+    setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},2000);
+  });
+}
 </script>
 </body>
 </html>
