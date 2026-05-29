@@ -653,17 +653,46 @@ function pick(t) {
 }
 function tog(h) { h.parentElement.classList.toggle('open'); }
 function copyCode(btn) {
-  const code = btn.previousElementSibling?.textContent?.trim() || '';
-  navigator.clipboard.writeText(code).then(()=>{
-    btn.textContent='copied!';btn.classList.add('done');
-    setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},2000);
+  // Get all text nodes before the button in the same container
+  const container = btn.parentElement;
+  let code = '';
+  container.childNodes.forEach(node => {
+    if (node !== btn && node.nodeType === Node.TEXT_NODE) {
+      code += node.textContent;
+    } else if (node !== btn && node.nodeType === Node.ELEMENT_NODE) {
+      code += node.textContent;
+    }
   });
+  code = code.trim();
+  fallbackCopy(btn, code);
 }
-function copyText(btn,text) {
-  navigator.clipboard.writeText(text).then(()=>{
-    btn.textContent='copied!';btn.classList.add('done');
-    setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},2000);
-  });
+function copyText(btn, text) {
+  fallbackCopy(btn, text);
+}
+function fallbackCopy(btn, text) {
+  // Try modern clipboard API first, fall back to execCommand
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopied(btn);
+    }).catch(() => execCopy(btn, text));
+  } else {
+    execCopy(btn, text);
+  }
+}
+function execCopy(btn, text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showCopied(btn); } catch(e) {}
+  document.body.removeChild(ta);
+}
+function showCopied(btn) {
+  btn.textContent = 'copied!';
+  btn.classList.add('done');
+  setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('done'); }, 2000);
 }
 </script>
 </body>
