@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "archaeologist"
-version = "0.7.7"
+version = "0.8.2"
 description = "Find and auto-delete dead code across 9 languages — with git intelligence and auto PR"
 readme = "README.md"
 license = { text = "MIT" }
