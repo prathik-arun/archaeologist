@@ -410,6 +410,156 @@
 </div>
 <hr>
 
+
+<!-- GRAPH PREVIEW -->
+<div style="border-top:1px solid var(--border);padding:5rem 2rem;max-width:920px;margin:0 auto">
+  <span class="s-tag">// codebase graph</span>
+  <h2 class="s-title">Your architecture.<br><em>Visually.</em></h2>
+  <p style="font-size:14px;color:var(--muted);line-height:1.8;max-width:560px;margin-bottom:2rem">
+    Run <code style="font-family:'DM Mono',monospace;color:var(--gold)">archaeologist-graph ./my-project</code> and your browser opens an interactive map of your entire codebase. Files grouped by folder, colored by health, connected by real call relationships.
+  </p>
+
+  <!-- Mock graph preview -->
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:relative">
+    <!-- Fake topbar -->
+    <div style="background:#111110;border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);font-style:italic">☠ archaeologist-graph</span>
+      <span style="color:var(--border)">|</span>
+      <span style="font-size:11px;color:var(--muted)"><b style="color:var(--text)">584</b> functions</span>
+      <span style="font-size:11px;color:var(--muted)">·</span>
+      <span style="font-size:11px;color:var(--muted)"><b style="color:#e05a3a">2954</b> unused</span>
+      <span style="font-size:11px;color:var(--muted)">·</span>
+      <span style="font-size:11px;color:var(--muted)"><b style="color:var(--text)">149</b> files</span>
+    </div>
+
+    <!-- Mock graph canvas -->
+    <div style="padding:2rem;min-height:320px;position:relative;overflow:hidden">
+      <!-- SVG mock graph -->
+      <svg viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:280px">
+        <!-- Edges -->
+        <path d="M150,75 C150,130 310,130 310,185" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-opacity="0.4"/>
+        <path d="M310,75 C310,130 470,130 470,185" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-opacity="0.4"/>
+        <path d="M470,75 C470,130 630,130 630,185" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-opacity="0.4"/>
+        <path d="M150,75 C150,150 630,150 630,185" fill="none" stroke="#e05a3a" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="4,3"/>
+        <path d="M630,75 C630,130 790,130 790,185" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-opacity="0.4"/>
+
+        <!-- Row 1: UI screens -->
+        <!-- home_page - entry point -->
+        <rect x="10" y="20" width="145" height="70" rx="8" fill="#1a1a3a" stroke="#534AB7" stroke-width="1"/>
+        <rect x="11" y="21" width="143" height="20" rx="7" fill="#534AB733"/>
+        <rect x="11" y="33" width="143" height="10" fill="#1a1a3a"/>
+        <text x="20" y="34" font-size="11" font-weight="600" fill="#7a76ff" font-family="monospace">home_page</text>
+        <text x="20" y="52" font-size="9" fill="#88887a" font-family="monospace"> · _buildAppBarActions</text>
+        <text x="20" y="64" font-size="9" fill="#88887a" font-family="monospace"> · _buildBody</text>
+        <text x="20" y="76" font-size="9" fill="#88887a" font-family="monospace"> · _buildGroups</text>
+        <text x="130" y="84" font-size="8" fill="#534AB799" font-family="monospace">home/</text>
+
+        <!-- event_list - mixed -->
+        <rect x="165" y="20" width="145" height="70" rx="8" fill="#2a1f0a" stroke="#c9a84c" stroke-width="1"/>
+        <rect x="166" y="21" width="143" height="20" rx="7" fill="#c9a84c22"/>
+        <rect x="166" y="33" width="143" height="10" fill="#2a1f0a"/>
+        <text x="175" y="34" font-size="11" font-weight="600" fill="#e8c96d" font-family="monospace">events_list_scr…</text>
+        <rect x="270" y="24" width="32" height="12" rx="6" fill="#e05a3a22" stroke="#e05a3a55" stroke-width="0.5"/>
+        <text x="278" y="33" font-size="9" fill="#e05a3a" font-family="monospace">3☠</text>
+        <text x="175" y="52" font-size="9" fill="#e05a3a77" font-family="monospace">☠ _refreshAllProviders</text>
+        <text x="175" y="64" font-size="9" fill="#88887a" font-family="monospace"> · showDialog</text>
+        <text x="175" y="76" font-size="9" fill="#88887a" font-family="monospace"> · _buildEmptyState</text>
+        <text x="282" y="84" font-size="8" fill="#c9a84c99" font-family="monospace">events/</text>
+
+        <!-- group_detail - clean -->
+        <rect x="320" y="20" width="145" height="70" rx="8" fill="#0d1f17" stroke="#1a4a2e" stroke-width="1"/>
+        <rect x="321" y="21" width="143" height="20" rx="7" fill="#1a4a2e33"/>
+        <rect x="321" y="33" width="143" height="10" fill="#0d1f17"/>
+        <text x="330" y="34" font-size="11" font-weight="600" fill="#4a9e6b" font-family="monospace">group_detail_in…</text>
+        <text x="330" y="52" font-size="9" fill="#88887a" font-family="monospace"> · drawStar</text>
+        <text x="330" y="64" font-size="9" fill="#88887a" font-family="monospace"> · degToRad</text>
+        <text x="330" y="76" font-size="9" fill="#88887a" font-family="monospace"> · showDialog</text>
+        <text x="440" y="84" font-size="8" fill="#1a4a2e99" font-family="monospace">groups/</text>
+
+        <!-- Row 2: Services -->
+        <!-- user_service - mixed -->
+        <rect x="165" y="150" width="145" height="70" rx="8" fill="#2a1f0a" stroke="#c9a84c" stroke-width="1"/>
+        <rect x="166" y="151" width="143" height="20" rx="7" fill="#c9a84c22"/>
+        <rect x="166" y="163" width="143" height="10" fill="#2a1f0a"/>
+        <text x="175" y="164" font-size="11" font-weight="600" fill="#e8c96d" font-family="monospace">user_service</text>
+        <rect x="270" y="154" width="32" height="12" rx="6" fill="#e05a3a22" stroke="#e05a3a55" stroke-width="0.5"/>
+        <text x="278" y="163" font-size="9" fill="#e05a3a" font-family="monospace">5☠</text>
+        <text x="175" y="182" font-size="9" fill="#e05a3a77" font-family="monospace">☠ getUserProfileV1</text>
+        <text x="175" y="194" font-size="9" fill="#88887a" font-family="monospace"> · fetchUser</text>
+        <text x="175" y="206" font-size="9" fill="#88887a" font-family="monospace"> · updateProfile</text>
+        <text x="275" y="214" font-size="8" fill="#c9a84c99" font-family="monospace">services/</text>
+
+        <!-- notification_service - all dead -->
+        <rect x="320" y="150" width="145" height="70" rx="8" fill="#2a0f0f" stroke="#E24B4A" stroke-width="1"/>
+        <rect x="321" y="151" width="143" height="20" rx="7" fill="#E24B4A22"/>
+        <rect x="321" y="163" width="143" height="10" fill="#2a0f0f"/>
+        <text x="330" y="164" font-size="11" font-weight="600" fill="#ff6b6b" font-family="monospace">notification_ser…</text>
+        <rect x="422" y="154" width="32" height="12" rx="6" fill="#e05a3a22" stroke="#e05a3a55" stroke-width="0.5"/>
+        <text x="430" y="163" font-size="9" fill="#e05a3a" font-family="monospace">8☠</text>
+        <text x="330" y="182" font-size="9" fill="#e05a3a77" font-family="monospace">☠ registerChannelHandler</text>
+        <text x="330" y="194" font-size="9" fill="#e05a3a77" font-family="monospace">☠ sendPushNotification</text>
+        <text x="330" y="206" font-size="9" fill="#e05a3a77" font-family="monospace">☠ scheduleNotification</text>
+        <text x="435" y="214" font-size="8" fill="#E24B4A99" font-family="monospace">services/</text>
+
+        <!-- logger - all dead -->
+        <rect x="475" y="150" width="145" height="70" rx="8" fill="#2a0f0f" stroke="#E24B4A" stroke-width="1"/>
+        <rect x="476" y="151" width="143" height="20" rx="7" fill="#E24B4A22"/>
+        <rect x="476" y="163" width="143" height="10" fill="#2a0f0f"/>
+        <text x="485" y="164" font-size="11" font-weight="600" fill="#ff6b6b" font-family="monospace">logger</text>
+        <rect x="573" y="154" width="36" height="12" rx="6" fill="#e05a3a22" stroke="#e05a3a55" stroke-width="0.5"/>
+        <text x="579" y="163" font-size="9" fill="#e05a3a" font-family="monospace">10☠</text>
+        <text x="485" y="182" font-size="9" fill="#e05a3a77" font-family="monospace">☠ clearLocalLogs</text>
+        <text x="485" y="194" font-size="9" fill="#e05a3a77" font-family="monospace">☠ exportLogsAsJson</text>
+        <text x="485" y="206" font-size="9" fill="#e05a3a77" font-family="monospace">☠ critical</text>
+        <text x="580" y="214" font-size="8" fill="#E24B4A99" font-family="monospace">utils/</text>
+
+        <!-- member_repository - mixed -->
+        <rect x="630" y="150" width="145" height="70" rx="8" fill="#2a1f0a" stroke="#c9a84c" stroke-width="1"/>
+        <rect x="631" y="151" width="143" height="20" rx="7" fill="#c9a84c22"/>
+        <rect x="631" y="163" width="143" height="10" fill="#2a1f0a"/>
+        <text x="640" y="164" font-size="11" font-weight="600" fill="#e8c96d" font-family="monospace">member_reposit…</text>
+        <rect x="736" y="154" width="32" height="12" rx="6" fill="#e05a3a22" stroke="#e05a3a55" stroke-width="0.5"/>
+        <text x="744" y="163" font-size="9" fill="#e05a3a" font-family="monospace">4☠</text>
+        <text x="640" y="182" font-size="9" fill="#e05a3a77" font-family="monospace">☠ updateComment</text>
+        <text x="640" y="194" font-size="9" fill="#88887a" font-family="monospace"> · getMembers</text>
+        <text x="640" y="206" font-size="9" fill="#88887a" font-family="monospace"> · addMember</text>
+        <text x="730" y="214" font-size="8" fill="#c9a84c99" font-family="monospace">repos/</text>
+
+        <!-- email_service - all dead -->
+        <rect x="785" y="150" width="65" height="70" rx="8" fill="#2a0f0f" stroke="#E24B4A" stroke-width="1"/>
+        <rect x="786" y="151" width="63" height="20" rx="7" fill="#E24B4A22"/>
+        <rect x="786" y="163" width="63" height="10" fill="#2a0f0f"/>
+        <text x="793" y="164" font-size="10" font-weight="600" fill="#ff6b6b" font-family="monospace">email_se…</text>
+        <text x="793" y="182" font-size="9" fill="#e05a3a77" font-family="monospace">☠ sendInvit…</text>
+        <text x="793" y="194" font-size="9" fill="#e05a3a77" font-family="monospace">☠ genLink</text>
+        <text x="793" y="214" font-size="8" fill="#E24B4A99" font-family="monospace">svc/</text>
+      </svg>
+
+      <!-- Overlay hint -->
+      <div style="position:absolute;bottom:12px;right:16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">
+        scroll to zoom · drag to pan · click any card
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 key features below -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);margin-top:2px">
+    <div style="background:var(--bg2);padding:1.5rem">
+      <div style="font-size:13px;font-weight:600;color:var(--cream);margin-bottom:6px">Grouped by folder</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">Each folder is a visual row. UI screens on top, services in the middle, repositories and utils below.</div>
+    </div>
+    <div style="background:var(--bg2);padding:1.5rem">
+      <div style="font-size:13px;font-weight:600;color:var(--cream);margin-bottom:6px">Color coded by health</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">Green = clean. Gold = has some unused code. Red = entire file is unused. Purple = entry point.</div>
+    </div>
+    <div style="background:var(--bg2);padding:1.5rem">
+      <div style="font-size:13px;font-weight:600;color:var(--cream);margin-bottom:6px">Click to explore</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">Click any card to see what depends on it, what it imports, and the full list of functions inside.</div>
+    </div>
+  </div>
+</div>
+<hr>
+
 <!-- GIT -->
 <div class="git-section" id="git">
   <span class="s-tag">// git flow</span>
