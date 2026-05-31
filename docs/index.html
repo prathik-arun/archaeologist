@@ -220,11 +220,7 @@
   <h2 class="s-title">Five tools.<br><em>Click one to explore.</em></h2>
 
   <div class="tools-grid">
-    <div class="tool-tab active" id="tab-unused" onclick="pick('unused')">
-      <span class="tab-icon">☠</span>
-      <div class="tab-name">Unused Code<br>Finder</div>
-    </div>
-    <div class="tool-tab" id="tab-graph" onclick="pick('graph')">
+    <div class="tool-tab active" id="tab-graph" onclick="pick('graph')">
       <span class="tab-icon">⬡</span>
       <div class="tab-name">Codebase<br>Graph</div>
     </div>
@@ -240,10 +236,14 @@
       <span class="tab-icon">⧉</span>
       <div class="tab-name">Duplicate<br>Detector</div>
     </div>
+    <div class="tool-tab" id="tab-unused" onclick="pick('unused')">
+      <span class="tab-icon">☠</span>
+      <div class="tab-name">Dead Code<br>Finder</div>
+    </div>
   </div>
 
   <!-- UNUSED -->
-  <div class="panel active" id="panel-unused">
+  <div class="panel" id="panel-unused">
     <div class="panel-title">☠ Unused Code Finder</div>
     <div class="panel-desc">Finds functions nobody calls. Combines static analysis with git history into a confidence score. Can auto-delete on a new branch, run your tests, and open a PR.</div>
 
@@ -308,7 +308,7 @@
   </div>
 
   <!-- GRAPH -->
-  <div class="panel" id="panel-graph">
+  <div class="panel active" id="panel-graph">
     <div class="panel-title">⬡ Codebase Graph</div>
     <div class="panel-desc">Opens an interactive browser map of your codebase. Files are nodes — sized by function count, colored by health. Arrows show which files call which.</div>
     <div class="cmd-block open">
