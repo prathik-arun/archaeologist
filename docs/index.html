@@ -188,7 +188,7 @@
         <div><span class="tp">$ </span><span class="tc">deadcode ./my-project --explain</span></div>
         <div><span class="ty">  85%</span><span class="td"> clearLocalLogs · logger.dart · 10mo untouched · No callers</span></div>
         <div>&nbsp;</div>
-        <div><span class="tp">$ </span><span class="tc">archaeologist-impact ./my-project user_service</span></div>
+        <div><span class="tp">$ </span><span class="tc">archaeologist-impact ./my-project auth_service</span></div>
         <div class="tg">  Blast radius: 42/100 MEDIUM · 8 callers · 3 test files</div>
         <div>&nbsp;</div>
         <div><span class="tp">$ </span><span class="tc">archaeologist-complexity ./my-project --html</span></div>
@@ -342,8 +342,8 @@
         <div style="display:flex;gap:6px;align-items:center"><span class="badge b-s">STABLE</span><span class="arrow">›</span></div>
       </div>
       <div class="cmd-body">
-        <div class="ex"><div class="ex-lbl">Terminal output</div><div class="ex-code">archaeologist-impact ./my-project user_service<button class="cp" onclick="copyCode(this)">copy</button></div></div>
-        <div class="ex"><div class="ex-lbl">Visual HTML report</div><div class="ex-code">archaeologist-impact ./my-project user_service --html<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">Terminal output</div><div class="ex-code">archaeologist-impact ./my-project auth_service<button class="cp" onclick="copyCode(this)">copy</button></div></div>
+        <div class="ex"><div class="ex-lbl">Visual HTML report</div><div class="ex-code">archaeologist-impact ./my-project auth_service --html<button class="cp" onclick="copyCode(this)">copy</button></div></div>
         <div class="flags"><div class="ft">Blast radius score</div>
           <div class="flag"><span class="fn" style="color:#E24B4A">70–100 HIGH</span><span class="fd">Many callers. Run full test suite. Write tests if none exist.</span></div>
           <div class="flag"><span class="fn" style="color:#EF9F27">40–69 MEDIUM</span><span class="fd">Several callers. Review them before changing signatures.</span></div>
@@ -477,11 +477,11 @@
         <text x="440" y="84" font-size="8" fill="#1a4a2e99" font-family="monospace">groups/</text>
 
         <!-- Row 2: Services -->
-        <!-- user_service - mixed -->
+        <!-- auth_service - mixed -->
         <rect x="165" y="150" width="145" height="70" rx="8" fill="#2a1f0a" stroke="#c9a84c" stroke-width="1"/>
         <rect x="166" y="151" width="143" height="20" rx="7" fill="#c9a84c22"/>
         <rect x="166" y="163" width="143" height="10" fill="#2a1f0a"/>
-        <text x="175" y="164" font-size="11" font-weight="600" fill="#e8c96d" font-family="monospace">user_service</text>
+        <text x="175" y="164" font-size="11" font-weight="600" fill="#e8c96d" font-family="monospace">auth_service</text>
         <rect x="270" y="154" width="32" height="12" rx="6" fill="#e05a3a22" stroke="#e05a3a55" stroke-width="0.5"/>
         <text x="278" y="163" font-size="9" fill="#e05a3a" font-family="monospace">5☠</text>
         <text x="175" y="182" font-size="9" fill="#e05a3a77" font-family="monospace">☠ getUserProfileV1</text>
