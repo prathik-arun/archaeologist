@@ -173,9 +173,37 @@
   <h1 class="hero-title">Codebase<br><em>intelligence.</em></h1>
   <p class="hero-sub">Five tools to understand, clean, and improve your codebase — all from one install.</p>
   <div class="install-pill">
-    <span>pip3 install archaeologist</span>
-    <button class="copy-btn" onclick="fallbackCopy(this,'pip3 install archaeologist')">copy</button>
+    <span id="install-cmd">pip3 install archaeologist</span>
+    <button class="copy-btn" id="hero-copy-btn">copy</button>
   </div>
+  <script>
+  document.getElementById('hero-copy-btn').addEventListener('click', function() {
+    var btn = this;
+    var text = 'pip3 install archaeologist';
+    try {
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'copied!';
+        setTimeout(function(){ btn.textContent = 'copy'; }, 2000);
+      }).catch(function() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'copied!';
+        setTimeout(function(){ btn.textContent = 'copy'; }, 2000);
+      });
+    } catch(e) {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = 'copied!';
+      setTimeout(function(){ btn.textContent = 'copy'; }, 2000);
+    }
+  });
+  </script>
   <div class="hero-links">
     <a href="#tools" class="ghost">See all tools →</a>
     <a href="https://github.com/prathik-arun/deadcode-archaeologist" target="_blank" class="ghost">GitHub →</a>
