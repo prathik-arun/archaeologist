@@ -10,17 +10,46 @@ pip3 install archaeologist
 
 ---
 
-## Five Tools
+## GitHub Action — Automated Weekly Reports
+
+Add one file to your repo and get a codebase report every Monday as a GitHub Issue:
+
+```yaml
+# .github/workflows/archaeologist.yml
+name: Archaeologist Codebase Report
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday 9am
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: prathik-arun/archaeologist-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**[→ View on GitHub Marketplace](https://github.com/marketplace/actions/archaeologist-codebase-intelligence)**
+
+---
+
+## Five CLI Tools
 
 ### ⬡ Codebase Graph
 Interactive browser map of your architecture. Files grouped by folder, colored by health, connected by real call relationships.
 
 ```bash
 archaeologist-graph ./my-project
-archaeologist-graph ./my-project --output graph.html   # save to share
+archaeologist-graph ./my-project --output graph.html
 ```
-
-**Colors:** 🟣 Entry point · 🟢 Clean · 🟡 Has dead code · 🔴 All unused
 
 ---
 
@@ -28,11 +57,9 @@ archaeologist-graph ./my-project --output graph.html   # save to share
 Before changing any file, see its blast radius — every caller, every importer, test coverage, and a 0–100 risk score.
 
 ```bash
-archaeologist-impact ./my-project --all --html         # rank ALL files by blast radius
-archaeologist-impact ./my-project [your-file] --html   # analyze a specific file
+archaeologist-impact ./my-project --all --html
+archaeologist-impact ./my-project [your-file] --html
 ```
-
-**Risk scores:** HIGH (70–100) · MEDIUM (40–69) · LOW (0–39)
 
 ---
 
@@ -41,10 +68,8 @@ Scores every function on cyclomatic complexity. Ranked worst-first.
 
 ```bash
 archaeologist-complexity ./my-project --html
-archaeologist-complexity ./my-project --min-score 15   # only show complex functions
+archaeologist-complexity ./my-project --min-score 15
 ```
-
-**Labels:** Very Complex (30+) · Complex (15–29) · Moderate (8–14) · Simple (0–7)
 
 ---
 
@@ -55,8 +80,6 @@ Finds copy-paste code and near-identical functions across your codebase.
 archaeologist-dupes ./my-project --html
 ```
 
-**Detects:** Same name in different files · Exact body copies · Near-identical bodies (85%+ similarity)
-
 ---
 
 ### ☠ Dead Code Finder
@@ -64,7 +87,7 @@ Finds unused functions using call graph + git history. Auto-deletes on an isolat
 
 ```bash
 deadcode ./my-project --explain
-deadcode-report ./my-project                           # interactive HTML dashboard
+deadcode-report ./my-project
 deadcode-clean ./my-project --dry-run --min-confidence 85
 deadcode-clean ./my-project --min-confidence 85
 ```
@@ -72,8 +95,6 @@ deadcode-clean ./my-project --min-confidence 85
 ---
 
 ## How Dead Code Scoring Works
-
-Static analysis alone has too many false positives. Archaeologist adds **git history** as a second signal.
 
 Each flagged function gets a 0–100 confidence score:
 
@@ -84,34 +105,6 @@ Each flagged function gets a 0–100 confidence score:
 | Author count | 15 | Single author ever committed to this file |
 | Recursive dead | 10 | All callers are themselves flagged |
 | Commit count | 10 | Only 1–2 total commits ever |
-
-**Verdicts:**
-- **80–100: Safe to delete** — Multiple signals agree
-- **50–79: Review first** — Likely unused, verify manually
-- **40–49: Needs runtime data** — May be called via reflection or dependency injection
-
----
-
-## Git Flow (Auto-clean)
-
-Your main branch is **never touched**. Everything happens on an isolated branch:
-
-1. New branch created — e.g. `cleanup-2026-06-01`
-2. Functions removed by precise AST byte ranges — no broken syntax
-3. Your test suite runs automatically
-4. Tests pass → PR opened · Tests fail → branch deleted, nothing changes
-
-```bash
-# Review the changes
-git checkout cleanup-2026-06-01
-git diff main cleanup-2026-06-01
-
-# Merge if happy
-git checkout main && git merge cleanup-2026-06-01
-
-# Roll back instantly
-git branch -D cleanup-2026-06-01
-```
 
 ---
 
@@ -142,10 +135,11 @@ Flask · Django · FastAPI · Requests · Scrapy · Rails · Sinatra · Express 
 
 - Python 3.11+
 - Git (for git history analysis)
-- GitHub token (optional, for auto-PR feature)
+- Mac or Linux (Windows support coming soon)
 
 ## License
 
 MIT — free to use, modify, and distribute.
 
 Website: https://prathik-arun.github.io/archaeologist
+GitHub Action: https://github.com/marketplace/actions/archaeologist-codebase-intelligence
