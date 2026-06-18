@@ -1,0 +1,25 @@
+# Copy this file to .github/workflows/archaeologist.yml in your repo
+
+name: Archaeologist Codebase Report
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'   # Every Monday at 9am UTC
+  workflow_dispatch:        # Also run manually from Actions tab
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # Full git history needed for accuracy
+
+      - uses: prathik-arun/archaeologist-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          min-confidence: 70    # Only flag dead code above 70% confidence
+          min-complexity: 15    # Only flag functions above complexity 15
