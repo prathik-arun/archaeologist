@@ -158,6 +158,7 @@
   <div class="logo">☠ Archaeologist</div>
   <ul class="nav-links">
     <li><a href="#install">Install</a></li>
+    <li><a href="#action">GitHub Action</a></li>
     <li><a href="#tools">Tools</a></li>
     <li><a href="#git">Git flow</a></li>
     <li><a href="#languages">Languages</a></li>
@@ -241,6 +242,44 @@
     <div class="note r" style="max-width:500px">Currently tested on <strong>Mac and Linux</strong>. Windows support coming soon — Windows users can use WSL in the meantime.</div>
   </div>
 </div>
+<hr>
+
+
+<!-- GITHUB ACTION -->
+<div class="install-section" id="action" style="border-top:1px solid var(--border);padding-top:5rem">
+  <span class="s-tag">// github action</span>
+  <h2 class="s-title">Or run it<br><em>automatically.</em></h2>
+  <p style="font-size:14px;color:var(--muted);line-height:1.8;max-width:560px;margin-bottom:2rem">
+    Add one file to your repo and get a full codebase report posted as a GitHub Issue — on a schedule you choose, no install needed.
+  </p>
+  <div class="install-box">
+    <div class="ex" style="max-width:600px">
+      <div class="ex-lbl">.github/workflows/archaeologist.yml</div>
+      <div class="ex-code" style="white-space:pre-wrap;line-height:1.6">name: Archaeologist Report
+on:
+  schedule:
+    - cron: '0 9 * * 1'   # Every Monday 9am
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: prathik-arun/archaeologist-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}<button class="cp" onclick="copyCode(this)">copy</button></div>
+    </div>
+    <div class="note g" style="max-width:600px;margin-top:1rem">Every Monday a GitHub Issue appears with dead code, complexity, duplicates, and blast radius for every file. Free for all repos.</div>
+    <div style="margin-top:1.5rem">
+      <a href="https://github.com/marketplace/actions/archaeologist-codebase-intelligence" target="_blank" class="ghost" style="display:inline-block">View on GitHub Marketplace →</a>
+    </div>
+  </div>
+</div>
+
 <hr>
 
 <!-- TOOLS -->
